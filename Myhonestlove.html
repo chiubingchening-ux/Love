@@ -3,239 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>❤️ 專屬於你的秘密 ❤️</title>
+    <title>❤️ 我們的專屬時光 ❤️</title>
     <style>
         :root {
-            --bg-color: #ffe6e6; --card-bg: rgba(255, 255, 255, 0.95);
-            --text-color: #333; --main-pink: #ff4d6d;
-            --btn-gray: #e0e0e0; --poem-color: #ffb3c1;
+            --bg: #ffe6e6; --card: rgba(255, 255, 255, 0.95);
+            --text: #333; --pink: #ff4d6d; --accent: #ffb3c1;
         }
         [data-theme="dark"] {
-            --bg-color: #121212; --card-bg: rgba(30, 30, 30, 0.98);
-            --text-color: #f0f0f0; --main-pink: #ff758f;
-            --btn-gray: #333; --poem-color: #ffccd5;
+            --bg: #121212; --card: rgba(30, 30, 30, 0.98);
+            --text: #f0f0f0; --pink: #ff758f; --accent: #ffccd5;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: all 0.3s ease; }
+        * { box-sizing: border-box; transition: all 0.3s ease; font-family: "Microsoft JhengHei", sans-serif; }
         body {
             margin: 0; padding: 0; height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
-            background-color: var(--bg-color);
-            font-family: "Microsoft JhengHei", sans-serif;
-            overflow: hidden; position: relative;
+            background-color: var(--bg); overflow: hidden; position: relative;
         }
 
-        /* 介面零件 */
-        #top-bar { position: fixed; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 1000; }
-        .control-btn { 
-            background: var(--card-bg); border: 1px solid var(--main-pink); 
-            border-radius: 15px; padding: 5px 12px; font-size: 0.8rem;
-            color: var(--text-color); cursor: pointer;
+        /* 右側計時器側邊欄 */
+        #timer-sidebar {
+            position: fixed; left: -250px; top: 50%; transform: translateY(-50%);
+            width: 220px; background: var(--card); padding: 20px;
+            border-radius: 0 20px 20px 0; border: 2px solid var(--pink);
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1); z-index: 1000;
+            display: none; /* 登入後顯示 */
         }
+        #timer-sidebar.active { left: 0; }
+        .timer-title { color: var(--pink); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; }
+        #timer-display { font-size: 0.85rem; line-height: 1.6; color: var(--text); }
 
-        /* 卡片系統 */
+        /* 頂部選單 */
+        #top-bar { position: fixed; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 1100; }
+        .control-el { background: var(--card); border: 1px solid var(--pink); border-radius: 10px; padding: 5px; color: var(--text); }
+
+        /* 卡片統一樣式 */
         .card {
-            background: var(--card-bg); padding: 35px 25px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            text-align: center; z-index: 100; width: 85%; max-width: 380px;
-            display: none; border: 2px solid var(--main-pink);
+            background: var(--card); padding: 30px; border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            text-align: center; z-index: 100; width: 90%; max-width: 360px;
+            border: 2px solid var(--pink); position: relative;
         }
-        h1 { color: var(--main-pink); font-size: 1.3rem; margin-bottom: 25px; }
-        input {
-            width: 100%; padding: 12px; margin-bottom: 20px;
-            border-radius: 10px; border: 1px solid #ddd; outline: none;
-            text-align: center; font-size: 1rem;
-        }
+        h1 { color: var(--pink); font-size: 1.2rem; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; outline: none; background: var(--bg); color: var(--text); }
+        .btn { padding: 12px 20px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-main { background: var(--pink); color: white; }
+        .btn-link { background: none; color: var(--pink); text-decoration: underline; font-size: 0.8rem; }
 
-        /* 按鈕系統 */
-        .btn-group { display: flex; justify-content: center; gap: 15px; height: 55px; align-items: center; }
-        .btn {
-            padding: 12px 25px; border-radius: 50px; border: none;
-            font-weight: bold; cursor: pointer; font-size: 1rem;
-        }
-        .btn-main { background: var(--main-pink); color: white; }
-        .btn-alt { background: #4a90e2; color: white; }
-        .btn-no { background: var(--btn-gray); color: var(--text-color); position: relative; z-index: 999; }
+        /* 告白按鈕組 */
+        .btn-group { display: flex; gap: 10px; height: 50px; }
+        #no-btn { background: #ccc; color: #555; position: fixed; width: auto; z-index: 2000; }
 
-        /* 愛心與背景 */
-        .heart { position: fixed; color: var(--main-pink); pointer-events: none; animation: floatUp linear infinite; z-index: 1; }
-        @keyframes floatUp {
-            0% { transform: translateY(110vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
+        /* 愛心背景 */
+        .heart { position: fixed; color: var(--pink); pointer-events: none; animation: floatUp linear infinite; z-index: 1; }
+        @keyframes floatUp { 0% { transform: translateY(110vh); opacity: 1; } 100% { transform: translateY(-10vh); opacity: 0; } }
 
-        /* 浪漫長詩 */
-        #poem-wrap {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 80px 25px;
+        /* 詩篇畫面 */
+        #poem-screen {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 3000; overflow-y: auto; padding: 60px 20px; text-align: center;
         }
-        .poem-text { color: var(--poem-color); font-size: 1.15rem; line-height: 2.5; text-align: center; }
-        .line { opacity: 0; animation: fadeIn 1s forwards; margin-bottom: 15px; display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 限制選單在深色模式的顏色 */
-        select { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--main-pink); border-radius: 10px; }
+        .poem-line { color: var(--accent); display: block; margin-bottom: 15px; opacity: 0; animation: fadeIn 1s forwards; font-size: 1.1rem; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body data-theme="light">
 
     <div id="top-bar">
-        <select id="lang-sel">
+        <select id="lang-sel" class="control-el">
             <option value="tc">繁體中文</option>
-            <option value="sc">简体中文</option>
             <option value="en">English</option>
-            <option value="ja">日本語</option>
         </select>
-        <button class="control-btn" onclick="toggleTheme()">🌓</button>
+        <button class="control-el" onclick="toggleTheme()">🌓 Theme</button>
     </div>
 
-    <div id="start-box" class="card" style="display: block;">
-        <h1 id="t-welcome">在開始之前...</h1>
-        <input type="text" id="user-name" placeholder="請輸入妳/他的名字">
-        <input type="password" id="secret-code" placeholder="輸入我們的秘密日期 (如0520)">
-        <button class="btn btn-main" style="width: 100%" onclick="checkStart()">開啟心門</button>
+    <div id="timer-sidebar">
+        <div class="timer-title">❤️ 我們在一起已經...</div>
+        <div id="timer-display">載入中...</div>
     </div>
 
-    <div id="gender-box" class="card">
+    <div id="reg-box" class="card">
+        <h1>建立專屬帳號</h1>
+        <input type="text" id="reg-user" placeholder="設定使用者名稱">
+        <input type="password" id="reg-pass" placeholder="設定密碼">
+        <input type="date" id="start-date" title="選擇在一起的日期">
+        <button class="btn btn-main" onclick="handleRegister()">註冊並設定日期</button>
+        <button class="btn btn-link" onclick="switchCard('login')">已有帳號？登入</button>
+    </div>
+
+    <div id="login-box" class="card" style="display:none;">
+        <h1>秘密基地登入</h1>
+        <input type="text" id="log-user" placeholder="使用者名稱">
+        <input type="password" id="log-pass" placeholder="密碼">
+        <button class="btn btn-main" onclick="handleLogin()">進入心門</button>
+        <button class="btn btn-link" onclick="switchCard('reg')">還沒帳號？註冊</button>
+    </div>
+
+    <div id="gender-box" class="card" style="display:none;">
         <h1 id="t-gender">妳/他是...</h1>
-        <div class="btn-group">
-            <button class="btn btn-alt" onclick="setLabel('gay')">男生</button>
-            <button class="btn btn-main" onclick="setLabel('t')">女生</button>
-        </div>
+        <button class="btn btn-main" style="background:#4a90e2" onclick="startPro('Gay')">男生</button>
+        <button class="btn btn-main" onclick="startPro('T')">女生</button>
     </div>
 
-    <div id="pro-box" class="card">
+    <div id="pro-box" class="card" style="display:none;">
         <h1 id="t-pro">妳願意跟我在一起嗎？</h1>
         <div class="btn-group">
-            <button class="btn btn-main" onclick="success()">同意</button>
-            <button id="no-btn" class="btn btn-no">不同意</button>
+            <button class="btn btn-main" onclick="showPoem()">同意</button>
+            <button id="no-btn" class="btn">不同意</button>
         </div>
     </div>
 
-    <div id="trap-box" class="card">
-        <h1 id="t-trap">妳確定？</h1>
-        <button class="btn btn-main" style="width: 100%" onclick="success()">同意</button>
-    </div>
-
-    <div id="poem-wrap">
-        <div id="poem-content" class="poem-text"></div>
+    <div id="poem-screen">
+        <div id="poem-content"></div>
     </div>
 
     <script>
-        let userName = "";
-        let userLabel = "";
-        let currentLang = 'tc';
-        const texts = {
-            tc: { welcome: "在開始之前...", gender: "妳/他是...", pro: "妳願意跟我在一起嗎？", sure: "妳確定？按不同意的就是", yes: "同意", no: "不同意" },
-            sc: { welcome: "在开始之前...", gender: "妳/他是...", pro: "妳愿意跟我在一起吗？", sure: "妳确定？按不同意的就是", yes: "同意", no: "不同意" },
-            en: { welcome: "Before we start...", gender: "You are...", pro: "Will you be with me?", sure: "Sure? Clicking No means you're", yes: "Yes", no: "No" },
-            ja: { welcome: "始める前に...", gender: "あなたは...", pro: "付き合ってくれる？", sure: "本当？いいえを押すのは", yes: "はい", no: "いいえ" }
-        };
+        let currentUser = null;
+        let timerInterval = null;
 
-        function toggleTheme() {
-            const body = document.body;
-            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        // --- 核心功能：註冊登入 ---
+        function switchCard(type) {
+            document.getElementById('reg-box').style.display = type === 'reg' ? 'block' : 'none';
+            document.getElementById('login-box').style.display = type === 'login' ? 'block' : 'none';
         }
 
-        // 隨機漂浮愛心
-        setInterval(() => {
-            if(document.getElementById('poem-wrap').style.display === 'block') return;
-            const h = document.createElement('div');
-            h.className = 'heart';
-            h.innerHTML = '❤️';
-            h.style.left = Math.random() * 100 + 'vw';
-            h.style.fontSize = (Math.random() * 20 + 10) + 'px';
-            h.style.animationDuration = (Math.random() * 3 + 4) + 's';
-            document.body.appendChild(h);
-            setTimeout(() => h.remove(), 6000);
-        }, 500);
+        function handleRegister() {
+            const user = document.getElementById('reg-user').value;
+            const pass = document.getElementById('reg-pass').value;
+            const date = document.getElementById('start-date').value;
+            if(!user || !pass || !date) return alert("請填寫完整資訊！");
 
-        function checkStart() {
-            userName = document.getElementById('user-name').value;
-            const code = document.getElementById('secret-code').value;
-            if(!userName) return alert("請輸入名字哦！");
-            if(code !== "0520") return alert("秘密日期不對哦！"); // 這裡改你的日期
-            
-            document.getElementById('start-box').style.display = 'none';
+            const userData = { user, pass, date };
+            localStorage.setItem(`user_${user}`, JSON.stringify(userData));
+            alert("註冊成功！請登入。");
+            switchCard('login');
+        }
+
+        function handleLogin() {
+            const user = document.getElementById('log-user').value;
+            const pass = document.getElementById('log-pass').value;
+            const stored = localStorage.getItem(`user_${user}`);
+
+            if(stored) {
+                const data = JSON.parse(stored);
+                if(data.pass === pass) {
+                    currentUser = data;
+                    startApp();
+                    return;
+                }
+            }
+            alert("帳號或密碼錯誤！");
+        }
+
+        // --- 核心功能：計時器 ---
+        function startApp() {
+            document.getElementById('login-box').style.display = 'none';
             document.getElementById('gender-box').style.display = 'block';
+            
+            // 啟動計時器側邊欄
+            const sidebar = document.getElementById('timer-sidebar');
+            sidebar.style.display = 'block';
+            setTimeout(() => sidebar.classList.add('active'), 100);
+            
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
-        function setLabel(type) {
-            userLabel = (type === 'gay') ? "Gay" : "T";
+        function updateTimer() {
+            const start = new Date(currentUser.date);
+            const now = new Date();
+            const diff = now - start;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / 1000 / 60) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('timer-display').innerHTML = `
+                <b>${days}</b> 天<br>
+                <b>${hours}</b> 小時<br>
+                <b>${mins}</b> 分鐘<br>
+                <b>${secs}</b> 秒
+            `;
+        }
+
+        // --- 告白邏輯 ---
+        function startPro(label) {
             document.getElementById('gender-box').style.display = 'none';
             document.getElementById('pro-box').style.display = 'block';
         }
 
-        // 修正後的按鈕逃跑邏輯
+        // 按鈕逃跑邏輯 (強化邊界檢查)
         const noBtn = document.getElementById('no-btn');
-        function moveNo() {
-            const padding = 50;
-            // 使用視窗實際可見寬高，減去按鈕本身寬高
-            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-            
-            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
-            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
-            
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
-        }
-
-        noBtn.addEventListener('mouseover', moveNo);
-        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
-        noBtn.onclick = () => {
-            document.getElementById('pro-box').style.display = 'none';
-            document.getElementById('t-trap').innerText = `${texts[currentLang].sure} ${userLabel}`;
-            document.getElementById('trap-box').style.display = 'block';
+        noBtn.onmouseover = noBtn.ontouchstart = function(e) {
+            e.preventDefault();
+            const pad = 60;
+            const maxX = window.innerWidth - noBtn.offsetWidth - pad;
+            const maxY = window.innerHeight - noBtn.offsetHeight - pad;
+            noBtn.style.left = Math.max(pad, Math.random() * maxX) + 'px';
+            noBtn.style.top = Math.max(pad, Math.random() * maxY) + 'px';
         };
 
-        function success() {
-            document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
-            document.getElementById('top-bar').style.display = 'none';
-            const wrap = document.getElementById('poem-wrap');
-            wrap.style.display = 'block';
+        function showPoem() {
+            document.getElementById('pro-box').style.display = 'none';
+            document.getElementById('timer-sidebar').style.zIndex = "4000"; // 詩篇出現時計時器依然可見
+            const screen = document.getElementById('poem-screen');
+            screen.style.display = 'block';
             
             const poemLines = [
-                `今天的陽光人格外燦爛，${userName}，`,
-                `因為我們終於牽起雙手。`,
-                // ... 此處省略其餘詩句以便展示，程式碼中會完整放入 ...
-                `慶祝我們正式告別單身，`,
-                `迎接充滿希望的新人生。`,
-                `願此生相守永遠不分離，${userName}。 ❤️`
+                `親愛的 ${currentUser.user}，`,
+                `自從 ${currentUser.date} 那天起，`,
+                `我的世界多了一個你。`,
+                `我們一起走過了 ${Math.floor((new Date() - new Date(currentUser.date))/(1000*60*60*24))} 天。`,
+                `這不是一段終點，`,
+                `而是我們故事的序章。`,
+                `我會一直在你身後，`,
+                `像計時器一樣，秒秒守護你。`,
+                `我愛你。 ❤️`
             ];
-            // 提示：你可以把之前那100行詩放入下面這段陣列中
-            const fullPoem = [
-                `今天的陽光人格外燦爛，${userName}，`,
-                `因為我們終於牽起雙手。`,
-                `走過無數次試探的街道，`,
-                `換來這一刻確定的擁抱。`,
-                `你的名字成了我的唯一，`,
-                `我的餘生只想和你共度。`,
-                `從此不再是一個人走路，`,
-                `每個轉角都有你的溫度。`,
-                `謝謝你走進我的世界裡，`,
-                `點亮了那些平凡的四季。`,
-                `我們約定好要一起成長，`,
-                `像樹木一樣堅定地守護。`,
-                `不管未來的風雨有多大，`, `我都會是你最暖的港灣。`, `那些沒說出口的心跳聲，`, `終於在今天有了回響聲。`, `你笑起來的樣子最動人，`, `是我見過最美麗的風景。`, `把你的手放進我的口袋，`, `感受那份最真實的依賴。`, `慶祝這份得來不易的愛，`, `值得我們用一輩子灌溉。`, `早餐要有兩份熱氣騰騰，`, `晚餐要有你我分享趣聞。`, `你的小脾氣我也都喜歡，`, `因為那是對我的不設防。`, `我會記住你所有的愛好，`, `努力成為你心中的驕傲。`, `願我們的情話永遠新鮮，`, `像初見時那樣清澈甘甜。`, `電影票根收藏著小祕密，`, `記錄著我們靠近的痕跡。`, `咖啡廳的角落依舊安靜，`, `見證了我們愛情的誕生。`, `雖然世界總是不停旋轉，`, `但我的目光只為你停留。`, `未來的藍圖裡全都是你，`, `每一筆一劃都寫滿甜蜜。`, `感謝緣分讓我們相遇見，`, `沒讓這份遺憾留在人間。`, `我們要一起去環遊世界，`, `看遍所有的名山與大川。`, `也要一起窩在沙發看戲，`, `度過那些最平凡的晨夕。`, `生活難免會有一些摩擦，`, `溝通是我們最好的解法。`, `吵架後也要記得給擁抱，`, `別讓冷戰把熱情都消耗。`, `你的幸福就是我的追求，`, `這份初心永遠不會生鏽。`, `星空下許過的那些心願，`, `正一步步在生活中體現。`, `你看那月亮也正在微笑，`, `祝賀我們找到彼此依靠。`, `把悲傷留給過往的歲月，`, `把溫柔全都留給了今夜。`, `我們是彼此最好的拼圖，`, `合在一起才算完美地圖。`, `珍惜這份奇妙的化學反應，`, `它是生命中最美的禮物。`, `不需要多麼奢華的儀式，`, `只要有你就是最好的事。`, `簡單的一句我想你愛你，`, `就能勝過所有的甜言密語。`, `我想和你一起慢慢變老，`, `看鏡子裡的皺紋長不少。`, `到那時依然牽著你的手，`, `走在我們當初的小路口。`, `愛是一場持久的馬拉松，`, `我會一直跑在你的身後。`, `若你累了就靠在我肩膀，`, `我會為你擋住所有憂傷。`, `你的善良是我愛的理由，`, `你的勇敢讓我不再低頭。`, `每一天都要比昨天更多，`, `更多的愛意在心頭閃過。`, `這是我們愛情的第幾章，`, `每一頁都閃爍著金色光。`, `不需要成為別人的榜樣，`, `只要我們活得足夠閃亮。`, `守護你是我餘生的責任，`, `寵愛你是我最大的福分。`, `情侶這個稱呼多麼動聽，`, `像是一首永恆的交響樂。`, `慶祝我們正式告別單身，`, `迎接充滿希望的新人生。`, `把這份喜悅分享給天空，`, `讓雲朵都帶著甜蜜入夢。`, `未來的路我們並肩前行，`, `不離不棄是最初的約定。`, `希望你每天都能有笑容，`, `所有的煩惱都隨風成空。`, `每一行文字都代表真心，`, `每一份情感都入木三分。`, `讓我們一起譜寫新篇章，`, `讓愛在時光裡地久天長。`, `百行詩篇寫不盡我心意，`, `唯有用行動來證明愛你。`, `再次祝賀我們結為伴侶，`, `願此生相守永遠不分離，${userName}。`
-            ];
-
-            const container = document.getElementById('poem-content');
+            
             let i = 0;
-            function addLine() {
-                if(i < fullPoem.length) {
-                    const l = document.createElement('span');
-                    l.className = 'line';
-                    l.innerText = fullPoem[i];
-                    container.appendChild(l);
-                    wrap.scrollTo({ top: wrap.scrollHeight, behavior: 'smooth' });
+            function typeLine() {
+                if(i < poemLines.length) {
+                    const el = document.createElement('span');
+                    el.className = 'poem-line';
+                    el.innerText = poemLines[i];
+                    document.getElementById('poem-content').appendChild(el);
+                    screen.scrollTo({ top: screen.scrollHeight, behavior: 'smooth' });
                     i++;
-                    setTimeout(addLine, 1500);
+                    setTimeout(typeLine, 1500);
                 }
             }
-            addLine();
+            typeLine();
         }
+
+        // --- 其他工具 ---
+        function toggleTheme() {
+            const b = document.body;
+            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        }
+
+        setInterval(() => {
+            const h = document.createElement('div');
+            h.className = 'heart';
+            h.innerHTML = '❤️';
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.fontSize = (Math.random() * 15 + 10) + 'px';
+            h.style.animationDuration = (Math.random() * 3 + 5) + 's';
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 7000);
+        }, 600);
     </script>
 </body>
 </html>
