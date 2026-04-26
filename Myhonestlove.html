@@ -1,263 +1,1938 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>❤️ 我們的專屬時光 ❤️</title>
-    
-    <link rel="icon" type="image/jpeg" href="https://img.freepik.com/premium-vector/red-love-heart-symbol-hand-drawn-icon_755179-400.jpg">
-    <link rel="apple-touch-icon" href="https://img.freepik.com/premium-vector/red-love-heart-symbol-hand-drawn-icon_755179-400.jpg">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>你同意跟我在一起嗎？</title>
+    <link rel="icon" href="https://img.freepik.com/premium-vector/red-love-heart-symbol-hand-drawn-icon_755179-400.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Caveat:wght@400;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* 字體設定：優先調用華康竹風體 W4 */
-        @font-face {
-            font-family: 'Bamboo';
-            src: local('DFPZhuFeng-W4'), local('華康竹風體W4'), local('DFPZhuFengW4-B5');
-        }
-
         :root {
-            --bg: #ffe6e6; --card: rgba(255, 255, 255, 0.95);
-            --text: #333; --pink: #ff4d6d; --accent: #ffb3c1;
-            --handwriting: 'Bamboo', 'Kaiti TC', 'STKaiti', '標楷體', cursive;
+            --bg: #fff5f7;
+            --bg-secondary: #ffe0e6;
+            --text: #4a2c3d;
+            --text-secondary: #6b4a5a;
+            --card-bg: #ffffff;
+            --card-shadow: 0 8px 32px rgba(180, 100, 120, 0.18);
+            --btn-agree: #ff6b8a;
+            --btn-agree-hover: #ff3d67;
+            --btn-disagree: #9e9e9e;
+            --btn-disagree-hover: #757575;
+            --border: #f0d0d8;
+            --modal-overlay: rgba(0, 0, 0, 0.55);
+            --modal-bg: #ffffff;
+            --input-bg: #fff5f7;
+            --input-border: #e8c8d2;
+            --topbar-bg: rgba(255, 255, 255, 0.9);
+            --topbar-border: #f0d0d8;
+            --heart-color: #ff6b8a;
+            --heart-secondary: #ffb3c6;
+            --glow: rgba(255, 107, 138, 0.4);
+            --timer-bg: #fff0f3;
+            --timer-text: #4a2c3d;
+            --poem-bg: rgba(255, 255, 255, 0.85);
+            --poem-text: #3d1f2b;
+            --cursor-color: #ff6b8a;
+            --badge-t: #ff6b8a;
+            --badge-gay: #6b9fff;
+            --select-option-bg: #fff0f3;
+            --select-option-hover: #ffe0e8;
         }
+
         [data-theme="dark"] {
-            --bg: #1a1a1a; --card: rgba(45, 45, 45, 0.95);
-            --text: #f0f0f0; --pink: #ff758f; --accent: #ffccd5;
+            --bg: #1a1a2e;
+            --bg-secondary: #252540;
+            --text: #e8d5db;
+            --text-secondary: #c4a8b4;
+            --card-bg: #252540;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --btn-agree: #ff6b8a;
+            --btn-agree-hover: #ff8da6;
+            --btn-disagree: #7a7a95;
+            --btn-disagree-hover: #9e9eb8;
+            --border: #3d3d5c;
+            --modal-overlay: rgba(0, 0, 0, 0.75);
+            --modal-bg: #2a2a42;
+            --input-bg: #1e1e34;
+            --input-border: #4a4a6a;
+            --topbar-bg: rgba(30, 30, 50, 0.95);
+            --topbar-border: #3d3d5c;
+            --heart-color: #ff6b8a;
+            --heart-secondary: #c94a6a;
+            --glow: rgba(255, 107, 138, 0.5);
+            --timer-bg: #2a2a42;
+            --timer-text: #e8d5db;
+            --poem-bg: rgba(30, 30, 50, 0.9);
+            --poem-text: #e8d5db;
+            --cursor-color: #ff8da6;
+            --select-option-bg: #2a2a42;
+            --select-option-hover: #3d3d5c;
         }
 
-        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            margin: 0; padding: 0; height: 100vh; width: 100vw;
-            display: flex; justify-content: center; align-items: center;
-            background-color: var(--bg); overflow: hidden; font-family: "Microsoft JhengHei", sans-serif;
+            font-family: 'Noto Sans TC', 'Noto Serif TC', 'Ma Shan Zheng', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
+            position: relative;
         }
 
-        /* 頂部選單 */
-        #nav-bar { position: fixed; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 1000; }
-        .nav-el { background: var(--card); border: 1px solid var(--pink); border-radius: 10px; padding: 5px 10px; color: var(--text); cursor: pointer; }
-
-        /* 計時器側邊欄 */
-        #timer-sidebar {
-            position: fixed; left: -260px; top: 50%; transform: translateY(-50%);
-            width: 200px; background: var(--card); padding: 20px;
-            border-radius: 0 20px 20px 0; border: 2px solid var(--pink);
-            box-shadow: 5px 0 15px rgba(0,0,0,0.1); z-index: 900;
+        /* 愛心背景層 */
+        #hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
         }
-        #timer-sidebar.active { left: 0; transition: left 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        /* 卡片設計 */
+        .floating-heart {
+            position: absolute;
+            animation: floatUp linear forwards;
+            pointer-events: none;
+            font-size: 24px;
+            opacity: 0;
+            filter: blur(0px);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) scale(0.3) rotate(0deg);
+                opacity: 0;
+            }
+            8% {
+                opacity: 0.9;
+            }
+            70% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-15vh) scale(1.4) rotate(40deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatUpAlt {
+            0% {
+                transform: translateY(105vh) translateX(0) scale(0.2) rotate(-15deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.85;
+            }
+            60% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-20vh) translateX(60px) scale(1.6) rotate(50deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatUpWide {
+            0% {
+                transform: translateY(105vh) translateX(0) scale(0.25) rotate(20deg);
+                opacity: 0;
+            }
+            12% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-18vh) translateX(-50px) scale(1.3) rotate(-35deg);
+                opacity: 0;
+            }
+        }
+
+        /* 頂部導航欄 */
+        #topbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: var(--topbar-bg);
+            border-bottom: 1px solid var(--topbar-border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            transition: background 0.5s ease, border-color 0.5s ease;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        #topbar .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        #topbar .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        #topbar select,
+        #topbar button {
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        #topbar select:hover,
+        #topbar button:hover {
+            border-color: var(--btn-agree);
+            box-shadow: 0 0 12px var(--glow);
+        }
+        #topbar select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 28px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%236b4a5a'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            min-width: 120px;
+        }
+        [data-theme="dark"] #topbar select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23e8d5db'/%3E%3C/svg%3E");
+        }
+
+        #topbar .topbar-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--btn-agree);
+            letter-spacing: 0.5px;
+        }
+
+        /* 主要內容區 */
+        #main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            gap: 28px;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 卡片 */
         .card {
-            background: var(--card); padding: 40px 30px; border-radius: 30px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
-            text-align: center; z-index: 100; width: 90%; max-width: 380px;
-            border: 2.5px solid var(--pink); display: none;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 10;
         }
-        h1 { color: var(--pink); font-size: 1.4rem; margin-bottom: 25px; }
-        
-        /* 修正按鈕重疊問題：初始狀態使用 Flex 佈局 */
-        .btn-group { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 20px; position: relative; min-height: 60px; width: 100%; }
-        .btn { padding: 12px 25px; border-radius: 50px; border: none; font-weight: bold; cursor: pointer; font-size: 1.1rem; flex: 1; max-width: 140px; }
-        .btn-main { background: var(--pink); color: white; box-shadow: 0 4px 15px rgba(255,77,109,0.3); }
-        .btn-gray { background: #ddd; color: #666; }
-        
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; background: var(--bg); color: var(--text); text-align: center; }
 
-        /* 浪漫長詩畫面 */
-        #poem-screen {
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
-            z-index: 2000; overflow-y: auto; padding: 80px 20px; text-align: center;
+        .card h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: var(--text);
+            font-weight: 600;
+            letter-spacing: 1px;
+            line-height: 1.4;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            min-height: 60px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 14px 36px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            font-family: inherit;
+            position: relative;
+            z-index: 20;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            min-width: 130px;
+        }
+
+        .btn-agree {
+            background: var(--btn-agree);
+            color: #fff;
+            box-shadow: 0 6px 20px rgba(255, 107, 138, 0.35);
+        }
+        .btn-agree:hover {
+            background: var(--btn-agree-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(255, 107, 138, 0.5);
+        }
+        .btn-agree:active {
+            transform: scale(0.95);
+            transition: transform 0.1s ease;
+        }
+
+        .btn-disagree {
+            background: var(--btn-disagree);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+            transition: all 0.15s ease;
+        }
+        .btn-disagree:hover {
+            background: var(--btn-disagree-hover);
+        }
+
+        /* 詩歌展示區 */
+        #poem-section {
+            display: none;
+            max-width: 650px;
+            width: 100%;
+            background: var(--poem-bg);
+            border-radius: 20px;
+            padding: 28px 24px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 10;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        #poem-section.visible {
+            display: block;
+            animation: fadeInUp 0.8s ease;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         #poem-content {
-            font-family: var(--handwriting);
-            color: var(--accent);
-            font-size: 1.3rem;
-            line-height: 2.2;
-            letter-spacing: 2px;
+            font-family: '華康竹風體W4', 'DFZhuFengW4', 'DFPZhuFengW4', 'Ma Shan Zheng', 'Caveat', 'Liu Jian Mao Cao', cursive, serif;
+            font-size: 1.25rem;
+            line-height: 2;
+            color: var(--poem-text);
+            text-align: left;
             white-space: pre-wrap;
-            max-width: 600px;
-            margin: 0 auto;
-            text-shadow: 0 0 5px rgba(255,180,193,0.5);
+            letter-spacing: 0.8px;
+            position: relative;
+        }
+        #poem-content .poem-line {
+            display: block;
+            min-height: 1.8em;
+            position: relative;
+        }
+        #poem-content .poem-line.typing::after {
+            content: '|';
+            color: var(--cursor-color);
+            animation: blink 0.7s infinite;
+            font-weight: bold;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
         }
 
-        #poem-content::after { content: '|'; animation: blink 1s infinite; margin-left: 5px; }
-        @keyframes blink { 50% { opacity: 0; } }
+        /* 計時器側邊欄 */
+        #timer-panel {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 50;
+            background: var(--timer-bg);
+            border-radius: 20px;
+            padding: 20px 18px;
+            border: 1px solid var(--border);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            min-width: 170px;
+            transition: all 0.5s ease;
+            color: var(--timer-text);
+        }
+        #timer-panel .timer-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+        }
+        #timer-panel .timer-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--btn-agree);
+        }
+        #timer-panel .timer-login-hint {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 4px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: var(--text-secondary);
+        }
+        #timer-panel .timer-login-hint:hover {
+            color: var(--btn-agree);
+        }
 
-        .heart { position: fixed; color: var(--pink); pointer-events: none; animation: floatUp linear infinite; z-index: 1; }
-        @keyframes floatUp { 0% { transform: translateY(110vh) scale(0.5); opacity: 0; } 100% { transform: translateY(-10vh) scale(1.2); opacity: 0; } }
+        @media (max-width: 768px) {
+            #timer-panel {
+                position: relative;
+                right: auto;
+                top: auto;
+                transform: none;
+                max-width: 350px;
+                width: 90%;
+                margin: 0 auto;
+            }
+            .card h1 {
+                font-size: 1.4rem;
+            }
+            .btn {
+                padding: 12px 28px;
+                font-size: 1rem;
+                min-width: 100px;
+            }
+            .btn-container {
+                gap: 14px;
+            }
+            #poem-content {
+                font-size: 1.05rem;
+                line-height: 1.8;
+            }
+            #topbar {
+                padding: 8px 12px;
+                gap: 6px;
+            }
+            #topbar select,
+            #topbar button {
+                padding: 6px 10px;
+                font-size: 0.78rem;
+            }
+            #topbar .topbar-title {
+                font-size: 0.85rem;
+            }
+        }
+
+        /* 性別選擇彈窗 */
+        #gender-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        #gender-modal .modal-card {
+            background: var(--modal-bg);
+            border-radius: 24px;
+            padding: 36px 30px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            max-width: 420px;
+            width: 90%;
+            border: 1px solid var(--border);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        #gender-modal h2 {
+            font-size: 1.6rem;
+            margin-bottom: 24px;
+            color: var(--text);
+            letter-spacing: 1px;
+        }
+        #gender-modal .gender-options {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        #gender-modal .gender-btn {
+            padding: 16px 32px;
+            border-radius: 50px;
+            border: 2px solid var(--border);
+            background: var(--select-option-bg);
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: var(--text);
+            letter-spacing: 1px;
+            min-width: 100px;
+        }
+        #gender-modal .gender-btn:hover {
+            background: var(--select-option-hover);
+            border-color: var(--btn-agree);
+            box-shadow: 0 0 16px var(--glow);
+            transform: translateY(-3px);
+        }
+        #gender-modal .gender-btn:active {
+            transform: scale(0.93);
+            transition: transform 0.1s ease;
+        }
+        #gender-modal .gender-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        /* "你確定"彈窗 */
+        #confirm-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #confirm-modal.active {
+            display: flex;
+            animation: fadeIn 0.35s ease;
+        }
+        #confirm-modal .modal-card {
+            background: var(--modal-bg);
+            border-radius: 24px;
+            padding: 32px 28px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            max-width: 440px;
+            width: 90%;
+            border: 1px solid var(--border);
+            animation: shakeIn 0.6s ease;
+        }
+        @keyframes shakeIn {
+            0% {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            25% {
+                transform: translateX(15px);
+            }
+            50% {
+                transform: translateX(-8px);
+            }
+            75% {
+                transform: translateX(4px);
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        #confirm-modal h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        #confirm-modal .gender-tag {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            letter-spacing: 2px;
+            margin: 12px 0 20px;
+            animation: pulse 1.2s infinite;
+        }
+        .tag-t {
+            background: #ffe0e8;
+            color: #d44a6a;
+            border: 2px solid #ff6b8a;
+        }
+        .tag-gay {
+            background: #e0e8ff;
+            color: #4a6ad4;
+            border: 2px solid #6b9fff;
+        }
+        [data-theme="dark"] .tag-t {
+            background: #3d1f2b;
+            color: #ff8da6;
+            border-color: #ff6b8a;
+        }
+        [data-theme="dark"] .tag-gay {
+            background: #1f2b3d;
+            color: #8da6ff;
+            border-color: #6b9fff;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+        }
+        #confirm-modal .btn-agree-only {
+            padding: 14px 40px;
+            border-radius: 50px;
+            border: none;
+            background: var(--btn-agree);
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            font-family: inherit;
+            box-shadow: 0 6px 20px rgba(255, 107, 138, 0.4);
+            transition: all 0.3s ease;
+            animation: pulse 1.5s infinite;
+        }
+        #confirm-modal .btn-agree-only:hover {
+            background: var(--btn-agree-hover);
+            box-shadow: 0 10px 30px rgba(255, 107, 138, 0.55);
+            transform: scale(1.05);
+        }
+
+        /* 登入註冊彈窗 */
+        #auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--modal-overlay);
+            z-index: 2500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #auth-modal.active {
+            display: flex;
+            animation: fadeIn 0.35s ease;
+        }
+        #auth-modal .modal-card {
+            background: var(--modal-bg);
+            border-radius: 24px;
+            padding: 30px 26px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+            max-width: 420px;
+            width: 90%;
+            border: 1px solid var(--border);
+        }
+        #auth-modal input {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 30px;
+            border: 1.5px solid var(--input-border);
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        #auth-modal input:focus {
+            border-color: var(--btn-agree);
+            box-shadow: 0 0 12px var(--glow);
+        }
+        #auth-modal input[type="date"] {
+            color-scheme: light;
+        }
+        [data-theme="dark"] #auth-modal input[type="date"] {
+            color-scheme: dark;
+        }
+        #auth-modal .auth-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        #auth-modal .auth-btns button {
+            padding: 10px 24px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        #auth-modal .btn-primary {
+            background: var(--btn-agree);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(255, 107, 138, 0.35);
+        }
+        #auth-modal .btn-primary:hover {
+            box-shadow: 0 8px 24px rgba(255, 107, 138, 0.5);
+            transform: translateY(-2px);
+        }
+        #auth-modal .btn-secondary {
+            background: transparent;
+            color: var(--text);
+            border: 1.5px solid var(--border);
+        }
+        #auth-modal .btn-secondary:hover {
+            border-color: var(--btn-agree);
+        }
+        #auth-modal .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 18px;
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1.5px solid var(--border);
+        }
+        #auth-modal .auth-tab {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            background: var(--input-bg);
+            color: var(--text);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        #auth-modal .auth-tab.active {
+            background: var(--btn-agree);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: 30px;
+            box-shadow: var(--card-shadow);
+            z-index: 4000;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border: 1px solid var(--border);
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            pointer-events: none;
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        /* 響應式 */
+        @media (max-width: 480px) {
+            .card {
+                padding: 22px 16px;
+                border-radius: 18px;
+            }
+            .card h1 {
+                font-size: 1.2rem;
+            }
+            .btn {
+                padding: 10px 22px;
+                font-size: 0.9rem;
+                min-width: 80px;
+            }
+            #poem-content {
+                font-size: 0.9rem;
+                line-height: 1.6;
+            }
+            #timer-panel {
+                min-width: auto;
+                padding: 14px 12px;
+                font-size: 0.85rem;
+            }
+            #topbar .topbar-title {
+                display: none;
+            }
+            #topbar {
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body data-theme="light">
 
-    <div id="nav-bar">
-        <select id="lang-sel" class="nav-el" onchange="switchLang(this.value)">
-            <option value="tc">繁體中文</option>
-            <option value="en">English</option>
-        </select>
-        <button class="nav-el" onclick="toggleTheme()">🌓</button>
-    </div>
+    <!-- 愛心背景 -->
+    <div id="hearts-container"></div>
 
-    <div id="timer-sidebar">
-        <div style="color:var(--pink); font-weight:bold; margin-bottom:10px;" data-i18n="timeTitle">我們在一起...</div>
-        <div id="timer-display" style="line-height:1.8;"></div>
-    </div>
+    <!-- Toast -->
+    <div id="toast"></div>
 
-    <div id="welcome-box" class="card" style="display: block;">
-        <h1 data-i18n="welcome">歡迎來到秘密基地</h1>
-        <p style="font-size: 0.9rem; color: var(--text);" data-i18n="intro">您可以設定紀念日來開啟計時器</p>
-        <input type="date" id="anniversary-date">
-        <button class="btn btn-main" style="max-width: 100%;" onclick="startApp()" data-i18n="enterBtn">進入告白</button>
-        <button class="btn" style="color:var(--pink); background:none; text-decoration:underline;" onclick="skipToApp()" data-i18n="skipBtn">訪客模式開始</button>
-    </div>
-
-    <div id="gender-box" class="card">
-        <h1 data-i18n="genderQ">妳/他是...</h1>
-        <div class="btn-group">
-            <button class="btn btn-main" style="background:#4a90e2; max-width: 100%;" onclick="setLabel('Gay')" data-i18n="boy">男生</button>
-            <button class="btn btn-main" style="max-width: 100%;" onclick="setLabel('T')" data-i18n="girl">女生</button>
+    <!-- 頂部導航欄 -->
+    <div id="topbar">
+        <div class="topbar-left">
+            <span class="topbar-title">💕</span>
+            <select id="lang-select" title="語言 / Language">
+                <option value="zh-Hant">繁體中文</option>
+                <option value="en">English</option>
+            </select>
+            <button id="theme-toggle" title="切換深色/淺色模式">🌓 <span id="theme-label">深色模式</span></button>
+        </div>
+        <div class="topbar-right">
+            <button id="btn-login-open" title="登入">🔐 <span class="auth-btn-text">登入</span></button>
+            <button id="btn-register-open" title="註冊">📝 <span class="auth-btn-text">註冊</span></button>
+            <button id="btn-logout" style="display:none;" title="登出">🚪 <span class="auth-btn-text">登出</span></button>
+            <span id="user-display" style="font-size:0.85rem;opacity:0.7;display:none;"></span>
         </div>
     </div>
 
-    <div id="pro-box" class="card">
-        <h1 data-i18n="proQ">妳願意跟我在一起嗎？</h1>
-        <div class="btn-group" id="btn-area">
-            <button id="yes-btn" class="btn btn-main" onclick="celebrate()" data-i18n="yes">同意</button>
-            <button id="no-btn" class="btn btn-gray" data-i18n="no">不同意</button>
+    <!-- 主要內容區 -->
+    <div id="main-content">
+        <!-- 問題卡片 -->
+        <div class="card" id="question-card">
+            <h1 id="question-text">你同意跟我在一起嗎？</h1>
+            <div class="btn-container" id="btn-container">
+                <button class="btn btn-agree" id="btn-agree">同意 ❤️</button>
+                <button class="btn btn-disagree" id="btn-disagree">不同意 💔</button>
+            </div>
+        </div>
+
+        <!-- 詩歌展示區 -->
+        <div id="poem-section">
+            <div id="poem-content"></div>
         </div>
     </div>
 
-    <div id="trap-box" class="card">
-        <h1 id="trap-text"></h1>
-        <button class="btn btn-main" style="max-width: 100%;" onclick="celebrate()" data-i18n="yes">同意</button>
+    <!-- 計時器面板 -->
+    <div id="timer-panel">
+        <div class="timer-label">💞 我們在一起的時間</div>
+        <div class="timer-value" id="timer-display">--</div>
+        <div class="timer-login-hint" id="timer-hint">登入以記錄紀念日</div>
     </div>
 
-    <div id="poem-screen">
-        <div id="poem-content"></div>
+    <!-- 性別選擇彈窗 -->
+    <div id="gender-modal">
+        <div class="modal-card">
+            <h2 id="gender-question">你是男生還是女生？</h2>
+            <div class="gender-options">
+                <button class="gender-btn" data-gender="male" id="gender-male">
+                    <span class="gender-icon">👦</span> <span>男生</span>
+                </button>
+                <button class="gender-btn" data-gender="female" id="gender-female">
+                    <span class="gender-icon">👧</span> <span>女生</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- "你確定"彈窗 -->
+    <div id="confirm-modal">
+        <div class="modal-card">
+            <h3 id="confirm-title">你確定？</h3>
+            <p id="confirm-subtitle" style="margin:8px 0;color:var(--text-secondary);">按不同意的就是...</p>
+            <div class="gender-tag" id="confirm-gender-tag">--</div>
+            <br>
+            <button class="btn-agree-only" id="btn-confirm-agree">同意 ❤️</button>
+        </div>
+    </div>
+
+    <!-- 登入註冊彈窗 -->
+    <div id="auth-modal">
+        <div class="modal-card">
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login" id="auth-tab-login">登入</button>
+                <button class="auth-tab" data-tab="register" id="auth-tab-register">註冊</button>
+            </div>
+            <div id="auth-form-login">
+                <input type="text" id="login-username" placeholder="用戶名稱">
+                <input type="password" id="login-password" placeholder="密碼">
+                <div class="auth-btns">
+                    <button class="btn-primary" id="btn-login-submit">登入</button>
+                    <button class="btn-secondary" id="btn-login-cancel">取消</button>
+                </div>
+            </div>
+            <div id="auth-form-register" style="display:none;">
+                <input type="text" id="register-username" placeholder="用戶名稱">
+                <input type="password" id="register-password" placeholder="密碼">
+                <label style="display:block;text-align:left;font-size:0.85rem;margin-top:6px;color:var(--text-secondary);">💞 在一起的紀念日</label>
+                <input type="date" id="register-anniversary">
+                <div class="auth-btns">
+                    <button class="btn-primary" id="btn-register-submit">註冊</button>
+                    <button class="btn-secondary" id="btn-register-cancel">取消</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const i18n = {
-            tc: {
-                welcome: "歡迎來到秘密基地", intro: "您可以設定紀念日來開啟計時器", enterBtn: "保存並進入", skipBtn: "直接開始 (訪客)",
-                timeTitle: "我們相愛已經...", genderQ: "妳/他是...", boy: "男生", girl: "女生", proQ: "妳願意跟我在一起嗎？",
-                yes: "同意", no: "不同意", sure: "確定嗎？按不同意的就是",
-                poem: `親愛的：\n\n今天的陽光格外燦爛，\n因為這一刻，我終於牽起了妳的手。\n\n我們在時光的長河中相遇，\n從陌生到熟悉，從試探到堅定。\n未來的路還很長，\n我願做妳最堅實的港灣，\n為妳擋風遮雨，陪妳看盡星辰。\n\n謝謝妳願意走進我的世界，\n點亮了那些平凡的四季。\n\n這份心意，僅以此百字情書與妳共讀，\n願餘生每一秒，都有妳的溫度。\n\n我愛妳。 ❤️`
-            },
-            en: {
-                welcome: "Welcome to Secret Place", intro: "Set an anniversary to enable timer", enterBtn: "Save & Enter", skipBtn: "Guest Mode",
-                timeTitle: "We've been together...", genderQ: "You are a...", boy: "Boy", girl: "Girl", proQ: "Will you stay with me?",
-                yes: "Yes", no: "No", sure: "Sure? Clicking No means you're ",
-                poem: `Dear Beloved:\n\nThe sun is brighter than ever today,\nBecause at this moment, I finally hold your hand.\n\nWe met in the river of time,\nFrom strangers to soulmates.\nThe road ahead is long,\nI will be your warmest harbor,\nShielding you from rain, watching stars with you.\n\nThank you for walking into my world,\nLighting up my ordinary seasons.\n\nWith this letter, I share my heart with you,\nMay every second of the future be filled with your warmth.\n\nI love you. ❤️`
-            }
-        };
+        (function() {
+            // ============ 多語言系統 ============
+            const i18n = {
+                'zh-Hant': {
+                    question: '你同意跟我在一起嗎？',
+                    agree: '同意 ❤️',
+                    disagree: '不同意 💔',
+                    genderQuestion: '你是男生還是女生？',
+                    male: '男生',
+                    female: '女生',
+                    confirmTitle: '你確定？',
+                    confirmSubtitle: '按不同意的就是...',
+                    tagT: 'T',
+                    tagGay: 'gay',
+                    timerLabel: '💞 我們在一起的時間',
+                    timerHint: '登入以記錄紀念日',
+                    login: '登入',
+                    register: '註冊',
+                    logout: '登出',
+                    darkMode: '深色模式',
+                    lightMode: '淺色模式',
+                    username: '用戶名稱',
+                    password: '密碼',
+                    anniversaryLabel: '💞 在一起的紀念日',
+                    loginBtn: '登入',
+                    registerBtn: '註冊',
+                    cancel: '取消',
+                    welcome: '歡迎',
+                    loggedInAs: '已登入',
+                    poem: null // 將在下方定義
+                },
+                'en': {
+                    question: 'Will you be with me?',
+                    agree: 'Yes ❤️',
+                    disagree: 'No 💔',
+                    genderQuestion: 'Are you a boy or a girl?',
+                    male: 'Boy',
+                    female: 'Girl',
+                    confirmTitle: 'Are you sure?',
+                    confirmSubtitle: 'The one who says no is...',
+                    tagT: 'T',
+                    tagGay: 'gay',
+                    timerLabel: '💞 Time Together',
+                    timerHint: 'Login to record anniversary',
+                    login: 'Login',
+                    register: 'Register',
+                    logout: 'Logout',
+                    darkMode: 'Dark Mode',
+                    lightMode: 'Light Mode',
+                    username: 'Username',
+                    password: 'Password',
+                    anniversaryLabel: '💞 Anniversary Date',
+                    loginBtn: 'Login',
+                    registerBtn: 'Register',
+                    cancel: 'Cancel',
+                    welcome: 'Welcome',
+                    loggedInAs: 'Logged in',
+                    poem: null
+                }
+            };
 
-        let currentLang = 'tc';
-        let userLabel = "";
-        let moveCount = 0;
+            // 詩歌 - 繁體中文
+            const poemZhHant = [
+                '今天的陽光人格外燦爛，',
+                '因為我們終於牽起雙手。',
+                '走過無數次試探的街道，',
+                '換來這一刻確定的擁抱。',
+                '你的名字成了我的唯一，',
+                '我的餘生只想和你共度。',
+                '從此不再是一個人走路，',
+                '每個轉角都有你的溫度。',
+                '謝謝你走進我的世界裡，',
+                '點亮了那些平凡的四季。',
+                '我們約定好要一起成長，',
+                '像樹木一樣堅定地守護。',
+                '不管未來的風雨有多大，',
+                '我都會是你最暖的港灣。',
+                '那些沒說出口的心跳聲，',
+                '終於在今天有了回響聲。',
+                '你笑起來的樣子最動人，',
+                '是我見過最美麗的風景。',
+                '把你的手放進我的口袋，',
+                '感受那份最真實的依賴。',
+                '慶祝這份得來不易的愛，',
+                '值得我們用一輩子灌溉。',
+                '早餐要有兩份熱氣騰騰，',
+                '晚餐要有你我分享趣聞。',
+                '你的小脾氣我也都喜歡，',
+                '因為那是對我的不設防。',
+                '我會記住你所有的愛好，',
+                '努力成為你心中的驕傲。',
+                '願我們的情話永遠新鮮，',
+                '像初見時那樣清澈甘甜。',
+                '電影票根收藏著小祕密，',
+                '記錄著我們靠近的痕跡。',
+                '咖啡廳的角落依舊安靜，',
+                '見證了我們愛情的誕生。',
+                '雖然世界總是不停旋轉，',
+                '但我的目光只為你停留。',
+                '未來的藍圖裡全都是你，',
+                '每一筆一劃都寫滿甜蜜。',
+                '感謝緣分讓我們相遇見，',
+                '沒讓這份遺憾留在人間。',
+                '我們要一起去環遊世界，',
+                '看遍所有的名山與大川。',
+                '也要一起窩在沙發看戲，',
+                '度過那些最平凡的晨夕。',
+                '生活難免會有一些摩擦，',
+                '溝通是我們最好的解法。',
+                '吵架後也要記得給擁抱，',
+                '別讓冷戰把熱情都消耗。',
+                '你的幸福就是我的追求，',
+                '這份初心永遠不會生鏽。',
+                '星空下許過的那些心願，',
+                '正一步步在生活中體現。',
+                '你看那月亮也正在微笑，',
+                '祝賀我們找到彼此依靠。',
+                '把悲傷留給過往的歲月，',
+                '把溫柔全都留給了今夜。',
+                '我們是彼此最好的拼圖，',
+                '合在一起才算完美地圖。',
+                '珍惜這份奇妙的化學反應，',
+                '它是生命中最美的禮物。',
+                '不需要多麼奢華的儀式，',
+                '只要有你就是最好的事。',
+                '簡單的一句我想你愛你，',
+                '就能勝過所有的甜言蜜語。',
+                '我想和你一起慢慢變老，',
+                '看鏡子裡的皺紋長不少。',
+                '到那時依然牽著你的手，',
+                '走在我們當初的小路口。',
+                '愛是一場持久的馬拉松，',
+                '我會一直跑在你的身後。',
+                '若你累了就靠在我肩膀，',
+                '我會為你擋住所有憂傷。',
+                '你的善良是我愛的理由，',
+                '你的勇敢讓我不再低頭。',
+                '每一天都要比昨天更多，',
+                '更多的愛意在心頭閃過。',
+                '這是我們愛情的第幾章，',
+                '每一頁都閃爍著金色光。',
+                '不需要成為別人的榜樣，',
+                '只要我們活得足夠閃亮。',
+                '守護你是我餘生的責任，',
+                '寵愛你是我最大的福分。',
+                '情侶這個稱呼多麼動聽，',
+                '像是一首永恆的交響樂。',
+                '慶祝我們正式告別單身，',
+                '迎接充滿希望的新人生。',
+                '把這份喜悅分享給天空，',
+                '讓雲朵都帶著甜蜜入夢。',
+                '未來的路我們並肩前行，',
+                '不離不棄是最初的約定。',
+                '希望你每天都能有笑容，',
+                '所有的煩惱都隨風成空。',
+                '每一行文字都代表真心，',
+                '每一份情感都入木三分。',
+                '讓我們一起譜寫新篇章，',
+                '讓愛在時光裡地久天長。',
+                '百行詩篇寫不盡我心意，',
+                '唯有用行動來證明愛你。',
+                '再次祝賀我們結為伴侶，',
+                '願此生相守永遠不分離。'
+            ];
 
-        function switchLang(lang) {
-            currentLang = lang;
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                el.innerText = i18n[lang][key];
-            });
-            if(document.getElementById('trap-box').style.display === 'block') {
-                document.getElementById('trap-text').innerText = i18n[currentLang].sure + " " + userLabel;
-            }
-        }
+            // 詩歌 - 英文 (浪漫情詩)
+            const poemEn = [
+                'The sunlight dances golden on this day,',
+                'As finally our hands entwine as one.',
+                'Through countless streets of wondering and wondering,',
+                'We\'ve reached this moment—certain, bright, and true.',
+                'Your name has become my only heartbeat,',
+                'My remaining years I wish to spend with you.',
+                'No longer walking lonely paths alone,',
+                'Every corner holds the warmth of you.',
+                'Thank you for stepping into my small world,',
+                'And lighting up the ordinary seasons.',
+                'We promised we would grow together strong,',
+                'Like ancient trees that stand through every storm.',
+                'No matter how the future winds may howl,',
+                'I\'ll be the harbor where you find your calm.',
+                'All those heartbeats never spoken aloud,',
+                'Finally echo in this sacred hour.',
+                'Your smile is the most beautiful sight I know,',
+                'The loveliest landscape I have ever seen.',
+                'Let me hold your hand inside my pocket,',
+                'And feel the truest warmth of belonging.',
+                'Let\'s celebrate this hard-earned love of ours,',
+                'It deserves a lifetime of tender care.',
+                'Breakfast for two with steam rising gently,',
+                'Dinner shared with stories of our day.',
+                'I love even your little moods and whims,',
+                'Because they show you trust me with your heart.',
+                'I\'ll remember every little thing you love,',
+                'And strive to be the pride within your eyes.',
+                'May our words of love stay forever fresh,',
+                'As sweet and clear as when we first began.',
+                'Movie ticket stubs hold our little secrets,',
+                'Recording traces of us drawing near.',
+                'The quiet corner of that old café,',
+                'Witnessed the birth of this love we hold dear.',
+                'Though the world keeps spinning endlessly,',
+                'My gaze will only ever rest on you.',
+                'The blueprint of our future is all you,',
+                'Every stroke and line is filled with sweetness.',
+                'I\'m grateful fate allowed our paths to cross,',
+                'And didn\'t leave this regret in the world.',
+                'We\'ll travel together across the globe,',
+                'Seeing all the mountains and the rivers.',
+                'And also curl up on the couch at home,',
+                'Spending the most ordinary mornings and evenings.',
+                'Life will inevitably have some friction,',
+                'Communication is our best solution.',
+                'After quarrels, remember to embrace,',
+                'Don\'t let silence consume our passion.',
+                'Your happiness is my life\'s pursuit,',
+                'This original heart will never rust.',
+                'Wishes made beneath the starry sky,',
+                'Are coming true step by step in our life.',
+                'Look, even the moon is smiling now,',
+                'Congratulating us on finding each other.',
+                'Leave the sadness to the passing years,',
+                'And save all the tenderness for tonight.',
+                'We are each other\'s perfect missing piece,',
+                'Only together do we make a complete map.',
+                'Cherish this wonderful chemistry,',
+                'It is the most beautiful gift of life.',
+                'No need for extravagant ceremonies,',
+                'Having you is already the best thing.',
+                'A simple "I miss you, I love you",',
+                'Outshines all the sweet words ever spoken.',
+                'I want to grow old slowly with you,',
+                'Watching our wrinkles multiply in the mirror.',
+                'Even then, still holding your hand tight,',
+                'Walking the same small streets we used to know.',
+                'Love is an enduring marathon,',
+                'I\'ll always be running right behind you.',
+                'If you grow tired, lean upon my shoulder,',
+                'I\'ll shield you from every sorrow.',
+                'Your kindness is the reason I love you,',
+                'Your courage lifts me up when I am low.',
+                'Each day we love a little more than yesterday,',
+                'More affection sparkles in my heart.',
+                'What chapter of our love is this now?',
+                'Every page glimmers with golden light.',
+                'We don\'t need to be anyone\'s model,',
+                'As long as we shine bright enough together.',
+                'Protecting you is my life\'s duty,',
+                'Cherishing you is my greatest blessing.',
+                'How beautiful the title "lovers" sounds,',
+                'Like an eternal symphony playing on.',
+                'Let\'s celebrate saying goodbye to being single,',
+                'And welcome a new life full of hope.',
+                'Share this joy with the vast sky above,',
+                'Let the clouds carry sweetness into dreams.',
+                'The road ahead we\'ll walk side by side,',
+                'Never leaving was our very first promise.',
+                'I hope you smile every single day,',
+                'And all your worries vanish with the wind.',
+                'Every line of text represents true feelings,',
+                'Every emotion is carved deep and true.',
+                'Let us write a new chapter together,',
+                'Let love endure through the endless flow of time.',
+                'A hundred lines cannot exhaust my heart,',
+                'Only actions can prove my love for you.',
+                'Once more I celebrate us becoming partners,',
+                'May we stay together, never to part.'
+            ];
 
-        function startApp() {
-            const date = document.getElementById('anniversary-date').value;
-            if(date) {
-                localStorage.setItem('ourDate', date);
-                startTimer();
-            }
-            document.getElementById('welcome-box').style.display = 'none';
-            document.getElementById('gender-box').style.display = 'block';
-        }
+            i18n['zh-Hant'].poem = poemZhHant;
+            i18n['en'].poem = poemEn;
 
-        function skipToApp() {
-            document.getElementById('welcome-box').style.display = 'none';
-            document.getElementById('gender-box').style.display = 'block';
-        }
+            // ============ 狀態管理 ============
+            let currentLang = localStorage.getItem('love_site_lang') || 'zh-Hant';
+            let currentTheme = localStorage.getItem('love_site_theme') || 'light';
+            let userGender = localStorage.getItem('love_site_gender') || null; // 'male' | 'female' | null
+            let currentUser = JSON.parse(localStorage.getItem('love_site_user') || 'null');
+            let anniversaryDate = localStorage.getItem('love_site_anniversary') || null;
+            let poemStarted = false;
+            let disagreeCooldown = false;
+            let poemTypingTimer = null;
 
-        function setLabel(l) {
-            userLabel = l;
-            document.getElementById('gender-box').style.display = 'none';
-            document.getElementById('pro-box').style.display = 'block';
-        }
+            // ============ DOM元素快取 ============
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
 
-        const noBtn = document.getElementById('no-btn');
-        function moveNo() {
-            if (moveCount > 5) {
-                document.getElementById('pro-box').style.display = 'none';
-                document.getElementById('trap-text').innerText = i18n[currentLang].sure + " " + userLabel;
-                document.getElementById('trap-box').style.display = 'block';
-                return;
-            }
-            const pad = 60;
-            const maxX = window.innerWidth - noBtn.offsetWidth - pad;
-            const maxY = window.innerHeight - noBtn.offsetHeight - pad;
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = Math.max(pad, Math.random() * maxX) + 'px';
-            noBtn.style.top = Math.max(pad, Math.random() * maxY) + 'px';
-            moveCount++;
-        }
+            const domBody = document.body;
+            const domTopbar = $('#topbar');
+            const domLangSelect = $('#lang-select');
+            const domThemeToggle = $('#theme-toggle');
+            const domThemeLabel = $('#theme-label');
+            const domBtnLoginOpen = $('#btn-login-open');
+            const domBtnRegisterOpen = $('#btn-register-open');
+            const domBtnLogout = $('#btn-logout');
+            const domUserDisplay = $('#user-display');
+            const domAuthBtnTexts = $$('.auth-btn-text');
+            const domQuestionText = $('#question-text');
+            const domBtnAgree = $('#btn-agree');
+            const domBtnDisagree = $('#btn-disagree');
+            const domBtnContainer = $('#btn-container');
+            const domPoemSection = $('#poem-section');
+            const domPoemContent = $('#poem-content');
+            const domTimerDisplay = $('#timer-display');
+            const domTimerHint = $('#timer-hint');
+            const domGenderModal = $('#gender-modal');
+            const domGenderMale = $('#gender-male');
+            const domGenderFemale = $('#gender-female');
+            const domGenderQuestion = $('#gender-question');
+            const domConfirmModal = $('#confirm-modal');
+            const domConfirmTitle = $('#confirm-title');
+            const domConfirmSubtitle = $('#confirm-subtitle');
+            const domConfirmGenderTag = $('#confirm-gender-tag');
+            const domBtnConfirmAgree = $('#btn-confirm-agree');
+            const domAuthModal = $('#auth-modal');
+            const domAuthTabLogin = $('#auth-tab-login');
+            const domAuthTabRegister = $('#auth-tab-register');
+            const domAuthFormLogin = $('#auth-form-login');
+            const domAuthFormRegister = $('#auth-form-register');
+            const domLoginUsername = $('#login-username');
+            const domLoginPassword = $('#login-password');
+            const domRegisterUsername = $('#register-username');
+            const domRegisterPassword = $('#register-password');
+            const domRegisterAnniversary = $('#register-anniversary');
+            const domToast = $('#toast');
+            const domHeartsContainer = $('#hearts-container');
+            const domGenderMaleSpan = domGenderMale ? domGenderMale.querySelector('span') : null;
+            const domGenderFemaleSpan = domGenderFemale ? domGenderFemale.querySelector('span') : null;
+            const domQuestionCard = $('#question-card');
 
-        noBtn.addEventListener('mouseenter', moveNo);
-        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
+            // ============ 初始化 ============
+            function init() {
+                // 設定主題
+                domBody.setAttribute('data-theme', currentTheme);
+                updateThemeLabel();
 
-        function startTimer() {
-            const sidebar = document.getElementById('timer-sidebar');
-            sidebar.style.display = 'block';
-            setTimeout(() => sidebar.classList.add('active'), 100);
-            setInterval(() => {
-                const start = new Date(localStorage.getItem('ourDate'));
-                const now = new Date();
-                const diff = now - start;
-                const d = Math.floor(diff / 86400000);
-                const h = Math.floor((diff % 86400000) / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                document.getElementById('timer-display').innerHTML = `${d}天 ${h}時<br>${m}分 ${s}秒`;
-            }, 1000);
-        }
+                // 設定語言
+                domLangSelect.value = currentLang;
 
-        function celebrate() {
-            document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
-            document.getElementById('nav-bar').style.display = 'none';
-            const sidebar = document.getElementById('timer-sidebar');
-            if(sidebar.style.display === 'block') sidebar.style.zIndex = "3000";
-            
-            document.getElementById('poem-screen').style.display = 'block';
-            const content = i18n[currentLang].poem;
-            const container = document.getElementById('poem-content');
-            let index = 0;
+                // 更新所有UI文字
+                updateAllUI();
 
-            function typeWriter() {
-                if (index < content.length) {
-                    container.innerHTML += content.charAt(index);
-                    index++;
-                    document.getElementById('poem-screen').scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
-                    setTimeout(typeWriter, Math.random() * 80 + 40);
+                // 檢查登入狀態
+                checkAuthState();
+
+                // 檢查是否已完成性別選擇
+                if (!userGender) {
+                    showGenderModal();
+                } else {
+                    hideGenderModal();
+                }
+
+                // 啟動愛心背景
+                startHearts();
+
+                // 啟動計時器
+                updateTimer();
+                setInterval(updateTimer, 1000);
+
+                // 監聽不同意按鈕的逃跑
+                setupDisagreeButton();
+
+                // 如果已經走完流程（有anniversary且已登入），顯示詩歌
+                if (anniversaryDate && currentUser && poemStarted === false) {
+                    // 不自動顯示，等待用戶操作
                 }
             }
-            typeWriter();
-        }
 
-        function toggleTheme() {
-            const b = document.body;
-            b.setAttribute('data-theme', b.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-        }
+            function updateThemeLabel() {
+                if (currentTheme === 'dark') {
+                    domThemeLabel.textContent = getI18n('lightMode');
+                } else {
+                    domThemeLabel.textContent = getI18n('darkMode');
+                }
+            }
 
-        setInterval(() => {
-            const h = document.createElement('div');
-            h.className = 'heart'; h.innerHTML = '❤️';
-            h.style.left = Math.random() * 100 + 'vw';
-            h.style.fontSize = (Math.random() * 15 + 10) + 'px';
-            h.style.animationDuration = (Math.random() * 3 + 4) + 's';
-            document.body.appendChild(h);
-            setTimeout(() => h.remove(), 5000);
-        }, 600);
+            function getI18n(key) {
+                return i18n[currentLang]?.[key] || i18n['zh-Hant'][key] || key;
+            }
+
+            function updateAllUI() {
+                // 問題文字
+                if (domQuestionText) domQuestionText.textContent = getI18n('question');
+                // 按鈕
+                if (domBtnAgree) domBtnAgree.textContent = getI18n('agree');
+                if (domBtnDisagree) domBtnDisagree.textContent = getI18n('disagree');
+                // 性別彈窗
+                if (domGenderQuestion) domGenderQuestion.textContent = getI18n('genderQuestion');
+                if (domGenderMaleSpan) domGenderMaleSpan.textContent = getI18n('male');
+                if (domGenderFemaleSpan) domGenderFemaleSpan.textContent = getI18n('female');
+                // 確認彈窗
+                if (domConfirmTitle) domConfirmTitle.textContent = getI18n('confirmTitle');
+                if (domConfirmSubtitle) domConfirmSubtitle.textContent = getI18n('confirmSubtitle');
+                // 計時器
+                const timerLabel = document.querySelector('#timer-panel .timer-label');
+                if (timerLabel) timerLabel.textContent = getI18n('timerLabel');
+                if (domTimerHint) domTimerHint.textContent = getI18n('timerHint');
+                // 頂部按鈕
+                if (domBtnLoginOpen) {
+                    const span = domBtnLoginOpen.querySelector('.auth-btn-text');
+                    if (span) span.textContent = getI18n('login');
+                }
+                if (domBtnRegisterOpen) {
+                    const span = domBtnRegisterOpen.querySelector('.auth-btn-text');
+                    if (span) span.textContent = getI18n('register');
+                }
+                if (domBtnLogout) {
+                    const span = domBtnLogout.querySelector('.auth-btn-text');
+                    if (span) span.textContent = getI18n('logout');
+                }
+                // 登入註冊彈窗
+                if (domAuthTabLogin) domAuthTabLogin.textContent = getI18n('login');
+                if (domAuthTabRegister) domAuthTabRegister.textContent = getI18n('register');
+                if (domLoginUsername) domLoginUsername.placeholder = getI18n('username');
+                if (domLoginPassword) domLoginPassword.placeholder = getI18n('password');
+                if (domRegisterUsername) domRegisterUsername.placeholder = getI18n('username');
+                if (domRegisterPassword) domRegisterPassword.placeholder = getI18n('password');
+                const annLabel = document.querySelector('#auth-form-register label');
+                if (annLabel) annLabel.textContent = getI18n('anniversaryLabel');
+                if ($('#btn-login-submit')) $('#btn-login-submit').textContent = getI18n('loginBtn');
+                if ($('#btn-register-submit')) $('#btn-register-submit').textContent = getI18n('registerBtn');
+                if ($('#btn-login-cancel')) $('#btn-login-cancel').textContent = getI18n('cancel');
+                if ($('#btn-register-cancel')) $('#btn-register-cancel').textContent = getI18n('cancel');
+                // 確認彈窗性別標籤
+                updateConfirmGenderTag();
+                // 主題標籤
+                updateThemeLabel();
+            }
+
+            function updateConfirmGenderTag() {
+                if (!domConfirmGenderTag) return;
+                if (userGender === 'female') {
+                    domConfirmGenderTag.textContent = getI18n('tagT');
+                    domConfirmGenderTag.className = 'gender-tag tag-t';
+                } else if (userGender === 'male') {
+                    domConfirmGenderTag.textContent = getI18n('tagGay');
+                    domConfirmGenderTag.className = 'gender-tag tag-gay';
+                } else {
+                    domConfirmGenderTag.textContent = '--';
+                    domConfirmGenderTag.className = 'gender-tag';
+                }
+            }
+
+            // ============ 主題切換 ============
+            domThemeToggle.addEventListener('click', () => {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                domBody.setAttribute('data-theme', currentTheme);
+                localStorage.setItem('love_site_theme', currentTheme);
+                updateThemeLabel();
+                showToast(currentTheme === 'dark' ? '🌙 已切換到深色模式' : '☀️ 已切換到淺色模式');
+            });
+
+            // ============ 語言切換 ============
+            domLangSelect.addEventListener('change', () => {
+                currentLang = domLangSelect.value;
+                localStorage.setItem('love_site_lang', currentLang);
+                updateAllUI();
+                // 如果詩歌已顯示，重新渲染詩歌
+                if (poemStarted && domPoemSection.classList.contains('visible')) {
+                    domPoemContent.innerHTML = '';
+                    startPoemTyping();
+                }
+                showToast(currentLang === 'zh-Hant' ? '已切換為繁體中文' : 'Switched to English');
+            });
+
+            // ============ Toast ============
+            let toastTimeout;
+
+            function showToast(msg) {
+                clearTimeout(toastTimeout);
+                domToast.textContent = msg;
+                domToast.classList.add('show');
+                toastTimeout = setTimeout(() => {
+                    domToast.classList.remove('show');
+                }, 2200);
+            }
+
+            // ============ 性別選擇 ============
+            function showGenderModal() {
+                domGenderModal.style.display = 'flex';
+                domQuestionCard.style.opacity = '0.5';
+                domQuestionCard.style.pointerEvents = 'none';
+            }
+
+            function hideGenderModal() {
+                domGenderModal.style.display = 'none';
+                domQuestionCard.style.opacity = '1';
+                domQuestionCard.style.pointerEvents = 'auto';
+            }
+
+            domGenderMale.addEventListener('click', () => {
+                userGender = 'male';
+                localStorage.setItem('love_site_gender', userGender);
+                hideGenderModal();
+                updateConfirmGenderTag();
+                showToast(getI18n('male') + ' ✓');
+            });
+
+            domGenderFemale.addEventListener('click', () => {
+                userGender = 'female';
+                localStorage.setItem('love_site_gender', userGender);
+                hideGenderModal();
+                updateConfirmGenderTag();
+                showToast(getI18n('female') + ' ✓');
+            });
+
+            // ============ 不同意按鈕逃跑機制 ============
+            function setupDisagreeButton() {
+                const btn = domBtnDisagree;
+                if (!btn) return;
+
+                let fleeThreshold = 140; // 桌面端閾值
+                const isMobile = window.innerWidth < 768;
+                if (isMobile) fleeThreshold = 90;
+
+                function getBtnRect() {
+                    return btn.getBoundingClientRect();
+                }
+
+                function getAgreeRect() {
+                    return domBtnAgree.getBoundingClientRect();
+                }
+
+                function isOverlapping(rect1, rect2, padding = 40) {
+                    return !(rect1.right + padding < rect2.left ||
+                        rect1.left - padding > rect2.right ||
+                        rect1.bottom + padding < rect2.top ||
+                        rect1.top - padding > rect2.bottom);
+                }
+
+                function getRandomPosition() {
+                    const btnRect = getBtnRect();
+                    const agreeRect = getAgreeRect();
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    const btnW = btnRect.width;
+                    const btnH = btnRect.height;
+                    const margin = 15;
+                    const topbarH = domTopbar.getBoundingClientRect().bottom + 10;
+
+                    let maxAttempts = 60;
+                    let newX, newY, newRect;
+
+                    do {
+                        newX = Math.random() * (vw - btnW - margin * 2) + margin;
+                        newY = Math.random() * (vh - btnH - margin * 2 - topbarH) + topbarH + margin;
+                        newRect = {
+                            left: newX,
+                            right: newX + btnW,
+                            top: newY,
+                            bottom: newY + btnH,
+                            width: btnW,
+                            height: btnH
+                        };
+                        maxAttempts--;
+                    } while (maxAttempts > 0 && isOverlapping(newRect, agreeRect, 50));
+
+                    // 確保在可視範圍內
+                    newX = Math.max(margin, Math.min(newX, vw - btnW - margin));
+                    newY = Math.max(topbarH + margin, Math.min(newY, vh - btnH - margin));
+
+                    return { x: newX, y: newY };
+                }
+
+                function moveButton() {
+                    if (disagreeCooldown) return;
+                    disagreeCooldown = true;
+
+                    const pos = getRandomPosition();
+                    btn.style.position = 'fixed';
+                    btn.style.left = pos.x + 'px';
+                    btn.style.top = pos.y + 'px';
+                    btn.style.zIndex = '100';
+                    btn.style.transition = 'left 0.18s ease-out, top 0.18s ease-out';
+
+                    setTimeout(() => {
+                        disagreeCooldown = false;
+                    }, 200);
+                }
+
+                // 桌面端：滑鼠靠近就逃跑
+                document.addEventListener('mousemove', (e) => {
+                    if (poemStarted) return;
+                    if (disagreeCooldown) return;
+                    const btnRect = getBtnRect();
+                    const mouseX = e.clientX;
+                    const mouseY = e.clientY;
+
+                    // 計算滑鼠到按鈕中心點的距離
+                    const btnCenterX = btnRect.left + btnRect.width / 2;
+                    const btnCenterY = btnRect.top + btnRect.height / 2;
+                    const dist = Math.sqrt((mouseX - btnCenterX) ** 2 + (mouseY - btnCenterY) ** 2);
+
+                    const threshold = window.innerWidth < 768 ? 100 : 150;
+                    if (dist < threshold) {
+                        moveButton();
+                    }
+                });
+
+                // 移動端：觸摸就逃跑
+                btn.addEventListener('touchstart', (e) => {
+                    if (poemStarted) return;
+                    e.preventDefault();
+                    moveButton();
+                }, { passive: false });
+
+                // 如果按鈕在螢幕外，重置位置
+                function checkButtonInView() {
+                    if (poemStarted) return;
+                    const btnRect = getBtnRect();
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    const topbarH = domTopbar.getBoundingClientRect().bottom + 10;
+                    const margin = 15;
+
+                    if (btnRect.left < -50 || btnRect.right > vw + 50 || btnRect.top < topbarH - 50 || btnRect.bottom >
+                        vh + 50) {
+                        btn.style.position = 'relative';
+                        btn.style.left = 'auto';
+                        btn.style.top = 'auto';
+                        btn.style.zIndex = '20';
+                    }
+                }
+
+                setInterval(checkButtonInView, 1500);
+
+                // 視窗大小變化時檢查
+                window.addEventListener('resize', () => {
+                    checkButtonInView();
+                    fleeThreshold = window.innerWidth < 768 ? 90 : 140;
+                });
+            }
+
+            // ============ 同意按鈕 - 顯示詩歌 ============
+            domBtnAgree.addEventListener('click', () => {
+                if (poemStarted) return;
+                poemStarted = true;
+                // 隱藏不同意按鈕
+                domBtnDisagree.style.display = 'none';
+                // 顯示詩歌區域
+                domPoemSection.classList.add('visible');
+                domPoemContent.innerHTML = '';
+                // 開始打字機效果
+                startPoemTyping();
+                // 大量愛心
+                spawnBurstHearts();
+                // 如果已登入且有紀念日，更新計時器
+                updateTimer();
+                showToast('💖 ' + (currentLang === 'en' ? 'I love you too!' : '我也愛你！'));
+            });
+
+            function startPoemTyping() {
+                const poem = i18n[currentLang]?.poem || i18n['zh-Hant'].poem;
+                let lineIndex = 0;
+                let charIndex = 0;
+                const totalLines = poem.length;
+
+                function typeNextChar() {
+                    if (lineIndex >= totalLines) {
+                        // 詩歌完成
+                        const allLines = domPoemContent.querySelectorAll('.poem-line');
+                        if (allLines.length > 0) {
+                            const lastLine = allLines[allLines.length - 1];
+                            if (lastLine) lastLine.classList.remove('typing');
+                        }
+                        return;
+                    }
+
+                    const line = poem[lineIndex];
+                    if (charIndex === 0) {
+                        // 創建新行
+                        const lineEl = document.createElement('span');
+                        lineEl.className = 'poem-line typing';
+                        lineEl.setAttribute('data-line', lineIndex);
+                        domPoemContent.appendChild(lineEl);
+                        // 自動滾動
+                        domPoemSection.scrollTop = domPoemSection.scrollHeight;
+                    }
+
+                    const currentLineEl = domPoemContent.querySelector(`[data-line="${lineIndex}"]`);
+                    if (currentLineEl && charIndex < line.length) {
+                        currentLineEl.textContent += line[charIndex];
+                        charIndex++;
+                        domPoemSection.scrollTop = domPoemSection.scrollHeight;
+                        const delay = 35 + Math.random() * 45; // 模擬手寫速度變化
+                        poemTypingTimer = setTimeout(typeNextChar, delay);
+                    } else if (charIndex >= line.length) {
+                        // 這一行完成
+                        const completedLine = domPoemContent.querySelector(`[data-line="${lineIndex}"]`);
+                        if (completedLine) {
+                            completedLine.classList.remove('typing');
+                        }
+                        lineIndex++;
+                        charIndex = 0;
+                        poemTypingTimer = setTimeout(typeNextChar, 180 + Math.random() * 120);
+                    }
+                }
+
+                typeNextChar();
+            }
+
+            // ============ 不同意按鈕點擊（極難觸發） ============
+            domBtnDisagree.addEventListener('click', (e) => {
+                if (poemStarted) return;
+                // 如果冷卻中（剛移動過），不觸發
+                if (disagreeCooldown) {
+                    e.stopPropagation();
+                    return;
+                }
+                // 觸發確認彈窗
+                showConfirmModal();
+            });
+
+            function showConfirmModal() {
+                updateConfirmGenderTag();
+                domConfirmModal.classList.add('active');
+                // 暫停逃跑
+                disagreeCooldown = true;
+            }
+
+            function hideConfirmModal() {
+                domConfirmModal.classList.remove('active');
+                disagreeCooldown = false;
+            }
+
+            domBtnConfirmAgree.addEventListener('click', () => {
+                hideConfirmModal();
+                // 等同於點擊同意
+                domBtnAgree.click();
+            });
+
+            // 點擊彈窗背景關閉（但這裡設計上不允許關閉，只有同意按鈕）
+            domConfirmModal.addEventListener('click', function(e) {
+                if (e.target === domConfirmModal) {
+                    // 不關閉，只閃爍提示
+                    const card = domConfirmModal.querySelector('.modal-card');
+                    if (card) {
+                        card.style.animation = 'none';
+                        card.offsetHeight;
+                        card.style.animation = 'shakeIn 0.5s ease';
+                    }
+                }
+            });
+
+            // ============ 登入註冊系統 ============
+            function checkAuthState() {
+                if (currentUser) {
+                    domBtnLoginOpen.style.display = 'none';
+                    domBtnRegisterOpen.style.display = 'none';
+                    domBtnLogout.style.display = 'inline-block';
+                    domUserDisplay.style.display = 'inline';
+                    domUserDisplay.textContent = '👤 ' + currentUser.username;
+                    domTimerHint.style.display = 'none';
+                    if (currentUser.anniversary) {
+                        anniversaryDate = currentUser.anniversary;
+                    }
+                } else {
+                    domBtnLoginOpen.style.display = 'inline-block';
+                    domBtnRegisterOpen.style.display = 'inline-block';
+                    domBtnLogout.style.display = 'none';
+                    domUserDisplay.style.display = 'none';
+                    domTimerHint.style.display = 'block';
+                    anniversaryDate = null;
+                }
+                updateTimer();
+            }
+
+            function openAuthModal(tab) {
+                domAuthModal.classList.add('active');
+                if (tab === 'register') {
+                    domAuthTabRegister.click();
+                } else {
+                    domAuthTabLogin.click();
+                }
+                // 清空輸入
+                domLoginUsername.value = '';
+                domLoginPassword.value = '';
+                domRegisterUsername.value = '';
+                domRegisterPassword.value = '';
+                domRegisterAnniversary.value = '';
+            }
+
+            function closeAuthModal() {
+                domAuthModal.classList.remove('active');
+            }
+
+            domBtnLoginOpen.addEventListener('click', () => openAuthModal('login'));
+            domBtnRegisterOpen.addEventListener('click', () => openAuthModal('register'));
+            domTimerHint.addEventListener('click', () => openAuthModal('login'));
+
+            domAuthTabLogin.addEventListener('click', () => {
+                domAuthTabLogin.classList.add('active');
+                domAuthTabRegister.classList.remove('active');
+                domAuthFormLogin.style.display = 'block';
+                domAuthFormRegister.style.display = 'none';
+            });
+
+            domAuthTabRegister.addEventListener('click', () => {
+                domAuthTabRegister.classList.add('active');
+                domAuthTabLogin.classList.remove('active');
+                domAuthFormLogin.style.display = 'none';
+                domAuthFormRegister.style.display = 'block';
+            });
+
+            $('#btn-login-cancel').addEventListener('click', closeAuthModal);
+            $('#btn-register-cancel').addEventListener('click', closeAuthModal);
+            domAuthModal.addEventListener('click', function(e) {
+                if (e.target === domAuthModal) closeAuthModal();
+            });
+
+            // 登入
+            $('#btn-login-submit').addEventListener('click', () => {
+                const username = domLoginUsername.value.trim();
+                const password = domLoginPassword.value.trim();
+                if (!username || !password) {
+                    showToast('⚠️ ' + (currentLang === 'en' ?
+                        'Please fill in all fields' : '請填寫所有欄位'));
+                    return;
+                }
+                const storedUser = JSON.parse(localStorage.getItem('love_site_user') || 'null');
+                if (!storedUser || storedUser.username !== username || storedUser.password !== password) {
+                    showToast('❌ ' + (currentLang === 'en' ?
+                        'Invalid username or password' : '用戶名稱或密碼錯誤'));
+                    return;
+                }
+                currentUser = storedUser;
+                localStorage.setItem('love_site_user', JSON.stringify(currentUser));
+                if (currentUser.anniversary) {
+                    anniversaryDate = currentUser.anniversary;
+                    localStorage.setItem('love_site_anniversary', anniversaryDate);
+                }
+                checkAuthState();
+                closeAuthModal();
+                updateTimer();
+                showToast('✅ ' + (currentLang === 'en' ? 'Logged in!' : '登入成功！') + ' ' +
+                    (currentLang === 'en' ? 'Welcome' : '歡迎') + ' ' + username);
+            });
+
+            // 註冊
+            $('#btn-register-submit').addEventListener('click', () => {
+                const username = domRegisterUsername.value.trim();
+                const password = domRegisterPassword.value.trim();
+                const anniversary = domRegisterAnniversary.value;
+                if (!username || !password) {
+                    showToast('⚠️ ' + (currentLang === 'en' ?
+                        'Please fill in all fields' : '請填寫所有欄位'));
+                    return;
+                }
+                if (!anniversary) {
+                    showToast('⚠️ ' + (currentLang === 'en' ?
+                        'Please set the anniversary date' : '請設定紀念日'));
+                    return;
+                }
+                const newUser = {
+                    username: username,
+                    password: password,
+                    anniversary: anniversary
+                };
+                localStorage.setItem('love_site_user', JSON.stringify(newUser));
+                currentUser = newUser;
+                anniversaryDate = anniversary;
+                localStorage.setItem('love_site_anniversary', anniversaryDate);
+                checkAuthState();
+                closeAuthModal();
+                updateTimer();
+                showToast('🎉 ' + (currentLang === 'en' ?
+                    'Registered successfully!' : '註冊成功！') + ' ' +
+                    (currentLang === 'en' ? 'Welcome' : '歡迎') + ' ' + username);
+            });
+
+            // 登出
+            domBtnLogout.addEventListener('click', () => {
+                currentUser = null;
+                anniversaryDate = null;
+                localStorage.removeItem('love_site_user');
+                localStorage.removeItem('love_site_anniversary');
+                checkAuthState();
+                updateTimer();
+                showToast('👋 ' + (currentLang === 'en' ? 'Logged out' : '已登出'));
+            });
+
+            // ============ 計時器 ============
+            function updateTimer() {
+                if (!anniversaryDate || !currentUser) {
+                    domTimerDisplay.textContent = '--';
+                    if (domTimerHint) domTimerHint.style.display = 'block';
+                    return;
+                }
+                if (domTimerHint) domTimerHint.style.display = 'none';
+                const start = new Date(anniversaryDate);
+                const now = new Date();
+                if (isNaN(start.getTime())) {
+                    domTimerDisplay.textContent = '--';
+                    return;
+                }
+                if (now < start) {
+                    domTimerDisplay.textContent = currentLang === 'en' ? 'Coming soon...' : '即將開始...';
+                    return;
+                }
+                const diffMs = now - start;
+                const diffSec = Math.floor(diffMs / 1000);
+                const years = Math.floor(diffSec / (365.25 * 24 * 3600));
+                const remainingAfterYears = diffSec - years * 365.25 * 24 * 3600;
+                const months = Math.floor(remainingAfterYears / (30.44 * 24 * 3600));
+                const remainingAfterMonths = remainingAfterYears - months * 30.44 * 24 * 3600;
+                const days = Math.floor(remainingAfterMonths / (24 * 3600));
+                const remainingAfterDays = remainingAfterMonths - days * 24 * 3600;
+                const hours = Math.floor(remainingAfterDays / 3600);
+                const remainingAfterHours = remainingAfterDays - hours * 3600;
+                const minutes = Math.floor(remainingAfterHours / 60);
+                const seconds = Math.floor(remainingAfterHours - minutes * 60);
+
+                let displayParts = [];
+                if (years > 0) displayParts.push(years + (currentLang === 'en' ? 'y' : '年'));
+                if (months > 0 || years > 0) displayParts.push(months + (currentLang === 'en' ? 'm' : '月'));
+                displayParts.push(days + (currentLang === 'en' ? 'd' : '天'));
+                displayParts.push(String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(
+                    seconds).padStart(2, '0'));
+
+                domTimerDisplay.textContent = displayParts.join(' ');
+            }
+
+            // ============ 愛心背景 ============
+            function createHeart() {
+                const heart = document.createElement('span');
+                heart.className = 'floating-heart';
+                const heartTypes = ['❤️', '💕', '💖', '💗', '💝', '💘', '🩷', '♥️', '💓', '💞'];
+                heart.textContent = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+                heart.style.left = Math.random() * 95 + '%';
+                heart.style.fontSize = (16 + Math.random() * 38) + 'px';
+                const animChoice = Math.random();
+                if (animChoice < 0.45) {
+                    heart.style.animationName = 'floatUp';
+                } else if (animChoice < 0.8) {
+                    heart.style.animationName = 'floatUpAlt';
+                } else {
+                    heart.style.animationName = 'floatUpWide';
+                }
+                heart.style.animationDuration = (6 + Math.random() * 10) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                domHeartsContainer.appendChild(heart);
+
+                // 動畫結束後移除
+                const duration = parseFloat(heart.style.animationDuration) + parseFloat(heart.style.animationDelay);
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.remove();
+                    }
+                }, duration * 1000 + 500);
+            }
+
+            function startHearts() {
+                // 初始生成一些愛心
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => createHeart(), i * 400);
+                }
+                // 持續生成
+                setInterval(() => {
+                    const currentCount = domHeartsContainer.querySelectorAll('.floating-heart').length;
+                    if (currentCount < 25) {
+                        createHeart();
+                    }
+                }, 800 + Math.random() * 600);
+            }
+
+            function spawnBurstHearts() {
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => createHeart(), i * 60);
+                }
+            }
+
+            // ============ 鍵盤快捷鍵 ============
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (domAuthModal.classList.contains('active')) {
+                        closeAuthModal();
+                    }
+                }
+            });
+
+            // ============ 視窗大小變化時重新檢查 ============
+            window.addEventListener('resize', () => {
+                if (domBtnDisagree.style.position === 'fixed' && !poemStarted) {
+                    const btnRect = domBtnDisagree.getBoundingClientRect();
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    const topbarH = domTopbar.getBoundingClientRect().bottom + 10;
+                    if (btnRect.left < 0 || btnRect.right > vw || btnRect.top < topbarH || btnRect.bottom > vh) {
+                        domBtnDisagree.style.position = 'relative';
+                        domBtnDisagree.style.left = 'auto';
+                        domBtnDisagree.style.top = 'auto';
+                        domBtnDisagree.style.zIndex = '20';
+                    }
+                }
+            });
+
+            // ============ 啟動 ============
+            init();
+            updateAllUI();
+
+            console.log('💕 網站已就緒！');
+            console.log('   - 性別選擇：' + (userGender || '尚未選擇'));
+            console.log('   - 登入狀態：' + (currentUser ? '已登入 (' + currentUser.username + ')' : '未登入'));
+            console.log('   - 紀念日：' + (anniversaryDate || '未設定'));
+            console.log('   - 語言：' + currentLang);
+            console.log('   - 主題：' + currentTheme);
+            console.log('   💡 提示：試著用滑鼠靠近「不同意」按鈕看看吧！');
+            console.log('   📱 手機版：觸摸「不同意」按鈕它就會逃跑喔！');
+        })();
     </script>
 </body>
 </html>
