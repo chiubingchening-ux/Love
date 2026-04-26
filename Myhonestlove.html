@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>我的真心話 ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            touch-action: manipulation;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffe6e6;
+            font-family: "Microsoft JhengHei", sans-serif;
+            overflow: hidden;
+        }
+
+        /* 對話框樣式 */
+        .card {
+            background-color: rgba(255, 255, 255, 0.98);
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(255, 100, 100, 0.2);
+            text-align: center;
+            z-index: 10;
+            width: 85%;
+            max-width: 350px;
+            display: none;
+        }
+
+        h1 {
+            color: #ff4d6d;
+            font-size: 1.4rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.1s;
+            flex: 1;
+        }
+
+        .btn-pink { background-color: #ff4d6d; color: white; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3); }
+        .btn-blue { background-color: #4a90e2; color: white; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3); }
+        .btn-gray { background-color: #f0f0f0; color: #888; }
+
+        /* 煙火與慶祝文字 */
+        #fireworks {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #0a0a0a;
+            display: none;
+            z-index: 1;
+        }
+
+        #congrats-msg {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #ff4d6d;
+            font-weight: bold;
+            text-shadow: 0 0 20px #fff;
+            z-index: 100;
+            width: 100%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="gender-box" class="card" style="display: block;">
+        <h1>你是男生還是女生？</h1>
+        <div class="btn-container">
+            <button id="boy-btn" class="btn-blue">我是男生</button>
+            <button id="girl-btn" class="btn-pink">我是女生</button>
+        </div>
+    </div>
+
+    <div id="proposal-box" class="card">
+        <h1>你同意跟我在一起嗎？</h1>
+        <div class="btn-container">
+            <button id="yes-btn-1" class="btn-pink">同意</button>
+            <button id="no-btn-1" class="btn-gray">不同意</button>
+        </div>
+    </div>
+
+    <div id="confirm-box" class="card">
+        <h1 id="trap-text">你確定？<br>(按不同意的就是...)</h1>
+        <div class="btn-container">
+            <button id="yes-btn-2" class="btn-pink" style="width: 100%;">同意</button>
+        </div>
+    </div>
+
+    <canvas id="fireworks"></canvas>
+    <div id="congrats-msg">祝99 ❤️</div>
+
+    <script>
+        const genderBox = document.getElementById('gender-box');
+        const proposalBox = document.getElementById('proposal-box');
+        const confirmBox = document.getElementById('confirm-box');
+        const trapText = document.getElementById('trap-text');
+        const fireworksCanvas = document.getElementById('fireworks');
+        const congratsMsg = document.getElementById('congrats-msg');
+
+        let label = ""; // 用來存 T 或 Gay
+
+        // --- 1. 選擇性別 ---
+        document.getElementById('boy-btn').onclick = () => {
+            label = "Gay";
+            showProposal();
+        };
+        document.getElementById('girl-btn').onclick = () => {
+            label = "T";
+            showProposal();
+        };
+
+        function showProposal() {
+            genderBox.style.display = 'none';
+            proposalBox.style.display = 'block';
+        }
+
+        // --- 2. 告白決定 ---
+        document.getElementById('yes-btn-1').onclick = showLoveEnding;
+
+        document.getElementById('no-btn-1').onclick = () => {
+            proposalBox.style.display = 'none';
+            // 根據第一步的選擇，動態修改文字
+            trapText.innerHTML = `你確定？<br><span style="color:red; font-size:1.6rem;">按不同意的就是${label}</span>`;
+            confirmBox.style.display = 'block';
+        };
+
+        // --- 3. 最終同意 ---
+        document.getElementById('yes-btn-2').onclick = showLoveEnding;
+
+        function showLoveEnding() {
+            genderBox.style.display = 'none';
+            proposalBox.style.display = 'none';
+            confirmBox.style.display = 'none';
+            fireworksCanvas.style.display = 'block';
+            congratsMsg.style.display = 'block';
+            startFireworks();
+        }
+
+        // 煙火動畫 (輕量化版)
+        function startFireworks() {
+            const ctx = fireworksCanvas.getContext('2d');
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+            let particles = [];
+
+            class Particle {
+                constructor(x, y, color) {
+                    this.x = x; this.y = y; this.color = color;
+                    this.velocity = { x: (Math.random()-0.5)*10, y: (Math.random()-0.5)*10 };
+                    this.alpha = 1;
+                }
+                draw() {
+                    ctx.save(); ctx.globalAlpha = this.alpha;
+                    ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2);
+                    ctx.fillStyle = this.color; ctx.fill(); ctx.restore();
+                }
+                update() {
+                    this.x += this.velocity.x; this.y += this.velocity.y;
+                    this.velocity.y += 0.05; this.alpha -= 0.012;
+                }
+            }
+
+            function animate() {
+                if (fireworksCanvas.style.display === 'none') return;
+                requestAnimationFrame(animate);
+                ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
+                ctx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+                particles.forEach((p, i) => {
+                    if (p.alpha > 0) { p.update(); p.draw(); }
+                    else { particles.splice(i, 1); }
+                });
+                if (Math.random() < 0.08) {
+                    const x = Math.random() * fireworksCanvas.width;
+                    const y = Math.random() * fireworksCanvas.height * 0.4;
+                    const color = `hsl(${Math.random()*360}, 100%, 60%)`;
+                    for(let i=0; i<30; i++) particles.push(new Particle(x, y, color));
+                }
+            }
+            animate();
+        }
+
+        window.onresize = () => {
+            fireworksCanvas.width = window.innerWidth;
+            fireworksCanvas.height = window.innerHeight;
+        };
+    </script>
+</body>
+</html>
