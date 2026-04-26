@@ -3,435 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>來自心底的告白 ❤️ From the Heart</title>
+    <title>❤️ 專屬於你的秘密 ❤️</title>
     <style>
         :root {
-            /* 淺色模式變數 */
-            --bg-color: #ffe6e6;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-color: #333;
-            --main-pink: #ff4d6d;
-            --sub-text: #888;
-            --btn-gray-bg: #f0f0f0;
-            --poem-text-color: #ffb3c1;
-            --settings-bg: rgba(255, 255, 255, 0.9);
+            --bg-color: #ffe6e6; --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #333; --main-pink: #ff4d6d;
+            --btn-gray: #e0e0e0; --poem-color: #ffb3c1;
         }
-
         [data-theme="dark"] {
-            /* 深色模式變數 */
-            --bg-color: #1a1a1a;
-            --card-bg: #2d2d2d;
-            --text-color: #f0f0f0;
-            --main-pink: #ff758f;
-            --sub-text: #aaa;
-            --btn-gray-bg: #444;
-            --poem-text-color: #ffccd5;
-            --settings-bg: rgba(45, 45, 45, 0.9);
+            --bg-color: #121212; --card-bg: rgba(30, 30, 30, 0.98);
+            --text-color: #f0f0f0; --main-pink: #ff758f;
+            --btn-gray: #333; --poem-color: #ffccd5;
         }
 
-        * { box-sizing: border-box; touch-action: manipulation; transition: background-color 0.3s, color 0.3s; }
-        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: all 0.3s ease; }
         body {
-            margin: 0; padding: 0; height: 100vh;
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
             display: flex; justify-content: center; align-items: center;
             background-color: var(--bg-color);
-            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
-            overflow: hidden;
-            position: relative;
+            font-family: "Microsoft JhengHei", sans-serif;
+            overflow: hidden; position: relative;
         }
 
-        /* 設置面板 (語言和主題) */
-        #settings-bar {
-            position: fixed; top: 15px; right: 15px;
-            display: flex; gap: 10px; z-index: 1000;
-            padding: 8px 12px; border-radius: 20px;
-            background-color: var(--settings-bg);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            backdrop-filter: blur(5px);
-            align-items: center;
-        }
-        .icon-btn {
-            background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 5px; opacity: 0.8;
-            color: var(--text-color);
-        }
-        .icon-btn:hover { opacity: 1; }
-        
-        #lang-select {
-            background: var(--card-bg);
-            border: 1px solid var(--main-pink);
-            color: var(--text-color);
-            font-size: 0.9rem; cursor: pointer; outline: none;
-            padding: 3px 8px; border-radius: 10px;
-        }
-        #lang-select option {
-            background-color: var(--card-bg);
-            color: var(--text-color);
+        /* 介面零件 */
+        #top-bar { position: fixed; top: 15px; right: 15px; display: flex; gap: 10px; z-index: 1000; }
+        .control-btn { 
+            background: var(--card-bg); border: 1px solid var(--main-pink); 
+            border-radius: 15px; padding: 5px 12px; font-size: 0.8rem;
+            color: var(--text-color); cursor: pointer;
         }
 
-        /* 背景愛心樣式 */
-        .bg-heart {
-            position: absolute; color: var(--main-pink); opacity: 0;
-            user-select: none; pointer-events: none;
-            animation: floatHeart linear infinite;
-        }
-        @keyframes floatHeart {
-            0% { transform: translateY(0) scale(0); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
-        }
-
-        /* 對話框樣式 */
+        /* 卡片系統 */
         .card {
-            background-color: var(--card-bg);
-            padding: 30px; border-radius: 25px;
-            box-shadow: 0 15px 35px rgba(255, 100, 100, 0.15);
-            text-align: center; z-index: 10;
-            width: 85%; max-width: 400px;
-            display: none;
-            backdrop-filter: blur(10px);
+            background: var(--card-bg); padding: 35px 25px; border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            text-align: center; z-index: 100; width: 85%; max-width: 380px;
+            display: none; border: 2px solid var(--main-pink);
+        }
+        h1 { color: var(--main-pink); font-size: 1.3rem; margin-bottom: 25px; }
+        input {
+            width: 100%; padding: 12px; margin-bottom: 20px;
+            border-radius: 10px; border: 1px solid #ddd; outline: none;
+            text-align: center; font-size: 1rem;
         }
 
-        h1 { color: var(--main-pink); font-size: 1.4rem; margin-bottom: 30px; line-height: 1.5; }
+        /* 按鈕系統 */
+        .btn-group { display: flex; justify-content: center; gap: 15px; height: 55px; align-items: center; }
+        .btn {
+            padding: 12px 25px; border-radius: 50px; border: none;
+            font-weight: bold; cursor: pointer; font-size: 1rem;
+        }
+        .btn-main { background: var(--main-pink); color: white; }
+        .btn-alt { background: #4a90e2; color: white; }
+        .btn-no { background: var(--btn-gray); color: var(--text-color); position: relative; z-index: 999; }
 
-        .btn-container { display: flex; justify-content: space-around; align-items: center; gap: 15px; position: relative; height: 60px; }
-
-        button.main-btn {
-            padding: 12px 20px; font-size: 1.1rem; border: none;
-            border-radius: 50px; cursor: pointer; font-weight: bold;
-            transition: transform 0.1s, left 0.3s ease-out, top 0.3s ease-out, background-color 0.3s;
+        /* 愛心與背景 */
+        .heart { position: fixed; color: var(--main-pink); pointer-events: none; animation: floatUp linear infinite; z-index: 1; }
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
 
-        .btn-yes { background-color: var(--main-pink); color: white; box-shadow: 0 4px 15px rgba(255, 77, 109, 0.3); }
-        .btn-boy { background-color: #4a90e2; color: white; box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3); }
-        
-        /* 預設的不同意按鈕 */
-        .btn-gray { background-color: var(--btn-gray-bg); color: var(--sub-text); }
+        /* 浪漫長詩 */
+        #poem-wrap {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000; overflow-y: auto; padding: 80px 25px;
+        }
+        .poem-text { color: var(--poem-color); font-size: 1.15rem; line-height: 2.5; text-align: center; }
+        .line { opacity: 0; animation: fadeIn 1s forwards; margin-bottom: 15px; display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 脫逃後的不同意按鈕（強制亮色防隱身） */
-        #no-btn-1.floating {
-            position: fixed;
-            background-color: #ffffff !important;
-            color: #333333 !important;
-            border: 2px solid #ff4d6d !important;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
-            z-index: 9999;
-        }
-
-        /* 煙火 Canvas */
-        #fireworks {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #0a0a0a; display: none; z-index: 1;
-        }
-
-        /* 浪漫長詩容器 */
-        #poem-container {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: 100;
-            background: rgba(0, 0, 0, 0.85);
-            color: white; overflow-y: auto; padding: 60px 25px;
-            text-align: center; scroll-behavior: smooth;
-        }
-
-        .poem-content {
-            font-size: 1.1rem; line-height: 2.3;
-            color: var(--poem-text-color);
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-            max-width: 600px; margin: 0 auto;
-        }
-        .poem-line {
-            opacity: 0; transform: translateY(10px);
-            animation: typeIn 0.5s forwards;
-            margin-bottom: 10px;
-            display: block;
-        }
-        @keyframes typeIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* 限制選單在深色模式的顏色 */
+        select { background: var(--card-bg); color: var(--text-color); border: 1px solid var(--main-pink); border-radius: 10px; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body data-theme="light">
 
-    <div id="settings-bar">
-        <select id="lang-select">
-            <option value="zh-TW">繁體中文</option>
-            <option value="zh-CN">简体中文</option>
+    <div id="top-bar">
+        <select id="lang-sel">
+            <option value="tc">繁體中文</option>
+            <option value="sc">简体中文</option>
             <option value="en">English</option>
             <option value="ja">日本語</option>
         </select>
-        <button id="theme-toggle" class="icon-btn">☀️</button>
+        <button class="control-btn" onclick="toggleTheme()">🌓</button>
     </div>
 
-    <div id="heart-container" style="position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;"></div>
+    <div id="start-box" class="card" style="display: block;">
+        <h1 id="t-welcome">在開始之前...</h1>
+        <input type="text" id="user-name" placeholder="請輸入妳/他的名字">
+        <input type="password" id="secret-code" placeholder="輸入我們的秘密日期 (如0520)">
+        <button class="btn btn-main" style="width: 100%" onclick="checkStart()">開啟心門</button>
+    </div>
 
-    <div id="gender-box" class="card" style="display: block;">
-        <h1 data-i18n="genderTitle">你是男生還是女生？</h1>
-        <div class="btn-container">
-            <button id="boy-btn" class="main-btn btn-boy" data-i18n="boyBtn">我是男生</button>
-            <button id="girl-btn" class="main-btn btn-yes" data-i18n="girlBtn">我是女生</button>
+    <div id="gender-box" class="card">
+        <h1 id="t-gender">妳/他是...</h1>
+        <div class="btn-group">
+            <button class="btn btn-alt" onclick="setLabel('gay')">男生</button>
+            <button class="btn btn-main" onclick="setLabel('t')">女生</button>
         </div>
     </div>
 
-    <div id="proposal-box" class="card">
-        <h1 data-i18n="proposalTitle">你同意跟我在一起嗎？</h1>
-        <div class="btn-container" id="p-btn-area">
-            <button id="yes-btn-1" class="main-btn btn-yes" data-i18n="yesBtn">同意</button>
-            <button id="no-btn-1" class="main-btn btn-gray" data-i18n="noBtn">不同意</button>
+    <div id="pro-box" class="card">
+        <h1 id="t-pro">妳願意跟我在一起嗎？</h1>
+        <div class="btn-group">
+            <button class="btn btn-main" onclick="success()">同意</button>
+            <button id="no-btn" class="btn btn-no">不同意</button>
         </div>
     </div>
 
-    <div id="confirm-box" class="card">
-        <h1 id="trap-text"></h1>
-        <div class="btn-container">
-            <button id="yes-btn-2" class="main-btn btn-yes" style="width: 100%;" data-i18n="yesBtn">同意</button>
-        </div>
+    <div id="trap-box" class="card">
+        <h1 id="t-trap">妳確定？</h1>
+        <button class="btn btn-main" style="width: 100%" onclick="success()">同意</button>
     </div>
 
-    <canvas id="fireworks"></canvas>
-    <div id="poem-container">
-        <div class="poem-content" id="poem-text">
-            </div>
+    <div id="poem-wrap">
+        <div id="poem-content" class="poem-text"></div>
     </div>
 
     <script>
-        // --- 語言資料包 ---
-        const i18n = {
-            'zh-TW': {
-                genderTitle: "你是男生還是女生？", boyBtn: "我是男生", girlBtn: "我是女生",
-                proposalTitle: "你同意跟我在一起嗎？", yesBtn: "同意", noBtn: "不同意",
-                trapAreYouSure: "你確定？", trapLabelT: "按不同意的就是T", trapLabelGay: "按不同意的就是Gay",
-                poem: [`今天的陽光人格外燦爛，`, `因為我們終於牽起雙手。`, `走過無數次試探的街道，`, `換來這一刻確定的擁抱。`, `你的名字成了我的唯一，`, `我的餘生只想和你共度。`, `從此不再是一個人走路，`, `每個轉角都有你的溫度。`, `謝謝你走進我的世界裡，`, `點亮了那些平凡的四季。`, `我們約定好要一起成長，`, `像樹木一樣堅定地守護。`, `不管未來的風雨有多大，`, `我都會是你最暖的港灣。`, `那些沒說出口的心跳聲，`, `終於在今天有了回響聲。`, `你笑起來的樣子最動人，`, `是我見過最美麗的風景。`, `把你的手放進我的口袋，`, `感受那份最真實的依賴。`, `慶祝這份得來不易的愛，`, `值得我們用一輩子灌溉。`, `早餐要有兩份熱氣騰騰，`, `晚餐要有你我分享趣聞。`, `你的小脾氣我也都喜歡，`, `因為那是對我的不設防。`, `我會記住你所有的愛好，`, `努力成為你心中的驕傲。`, `願我們的情話永遠新鮮，`, `像初見時那樣清澈甘甜。`, `電影票根收藏著小祕密，`, `記錄著我們靠近的痕跡。`, `咖啡廳的角落依舊安靜，`, `見證了我們愛情的誕生。`, `雖然世界總是不停旋轉，`, `但我的目光只為你停留。`, `未來的藍圖裡全都是你，`, `每一筆一劃都寫滿甜蜜。`, `感謝緣分讓我們相遇見，`, `沒讓這份遺憾留在人間。`, `我們要一起去環遊世界，`, `看遍所有的名山與大川。`, `也要一起窩在沙發看戲，`, `度過那些最平凡的晨夕。`, `生活難免會有一些摩擦，`, `溝通是我們最好的解法。`, `吵架後也要記得給擁抱，`, `別讓冷戰把熱情都消耗。`, `你的幸福就是我的追求，`, `這份初心永遠不會生鏽。`, `星空下許過的那些心願，`, `正一步步在生活中體現。`, `你看那月亮也正在微笑，`, `祝賀我們找到彼此依靠。`, `把悲傷留給過往的歲月，`, `把溫柔全都留給了今夜。`, `我們是彼此最好的拼圖，`, `合在一起才算完美地圖。`, `珍惜這份奇妙的化學反應，`, `它是生命中最美的禮物。`, `不需要多麼奢華的儀式，`, `只要有你就是最好的事。`, `簡單的一句我想你愛你，`, `就能勝過所有的甜言蜜語。`, `我想和你一起慢慢變老，`, `看鏡子裡的皺紋長不少。`, `到那時依然牽著你的手，`, `走在我們當初的小路口。`, `愛是一場持久的馬拉松，`, `我會一直跑在你的身後。`, `若你累了就靠在我肩膀，`, `我會為你擋住所有憂傷。`, `你的善良是我愛的理由，`, `你的勇敢讓我不再低頭。`, `每一天都要比昨天更多，`, `更多的愛意在心頭閃過。`, `這是我們愛情的第幾章，`, `每一頁都閃爍著金色光。`, `不需要成為別人的榜樣，`, `只要我們活得足夠閃亮。`, `守護你是我餘生的責任，`, `寵愛你是我最大的福分。`, `情侶這個稱呼多麼動聽，`, `像是一首永恆的交響樂。`, `慶祝我們正式告別單身，`, `迎接充滿希望的新人生。`, `把這份喜悅分享給天空，`, `讓雲朵都帶著甜蜜入夢。`, `未來的路我們並肩前行，`, `不離不棄是最初的約定。`, `希望你每天都能有笑容，`, `所有的煩惱都隨風成空。`, `每一行文字都代表真心，`, `每一份情感都入木三分。`, `讓我們一起譜寫新篇章，`, `讓愛在時光裡地久天長。`, `百行詩篇寫不盡我心意，`, `唯有用行動來證明愛你。`, `再次祝賀我們結為伴侶，`, `願此生相守永遠不分離。 ❤️`]
-            },
-            'zh-CN': {
-                genderTitle: "你是男生还是女生？", boyBtn: "我是男生", girlBtn: "我是女生",
-                proposalTitle: "你同意跟我在一起吗？", yesBtn: "同意", noBtn: "不同意",
-                trapAreYouSure: "你确定？", trapLabelT: "按不同意的就是T", trapLabelGay: "按不同意的就是Gay",
-                poem: [`今天的阳光人格外灿烂，`, `因为我们终于牵起双手。`, `走过无数次试探的街道，`, `换来这一刻确定的拥抱。`, `你的名字成了我的唯一，`, `我的余生只想和你共度。`, `从此不再是一个人走路，`, `每个转角都有你的温度。`, `谢谢你走进我的世界里，`, `点亮了那些平凡的四季。`, `我们约定好要一起成长，`, `像树木一样坚定地守护。`, `不管未来的风雨有多大，`, `我都会是你最暖的港湾。`, `那些没说出口的心跳声，`, `终于在今天有了回响声。`, `你笑起来的样子最动人，`, `是我见过最美丽的风景。`, `把你的手放进我的口袋，`, `感受那份最真实的依赖。`, `庆祝这份得来不易的爱，`, `值得我们用一辈子灌溉。`, `早餐要有两份热气腾腾，`, `晚餐要有你我分享趣闻。`, `你的小脾气我也都喜欢，`, `因为那是有对我的不设防。`, `我会记住你所有的爱好，`, `努力成为你心中的骄傲。`, `愿我们的情话永远新鲜，`, `像初见时那样清澈甘甜。`, `电影票根收藏着小秘密，`, `记录着我们靠近的痕跡。`, `咖啡厅的角落依旧安静，`, `见证了我们爱情的诞生。`, `Although the world always keeps spinning,`, `但我的目光只为你停留。`, `未来的蓝图里全都是你，`, `每一笔一划都写满甜蜜。`, `感谢缘分让我们相遇见，`, `没让这份遗憾留在人间。`, `我们要一起去环游世界，`, `看遍所有的名山与大川。`, `也要一起窩在沙发看戏，`, `度过那些最平凡的晨夕。`, `生活难免會有一些摩擦，`, `沟通是我们最好的解法。`, `吵架后也要记得给拥抱，`, `别让冷战把热情都消耗。`, `你的幸福就是我的追求，`, `这份初心永远不会生锈。`, `星空下许过的那些心愿，`, `正一步步在生活中体现。`, `你看那月亮也正在微笑，`, `祝贺我们找到彼此依靠。`, `把悲伤留给过往的岁月，`, `把温柔全都留给了今夜。`, `我们是彼此最好的拼图，`, `合在一起才算完美地图。`, `珍惜这份奇妙的化学反应，`, `它是生命中最美的礼物。`, `不需要多么奢华的仪式，`, `只要有你就是最好的事。`, `简单的一句我想你爱你，`, `就能胜过所有的甜言蜜语。`, `我想和你一起慢慢变老，`, `看镜子里的皱纹长不少。`, `到那时依然牵着你的手，`, `走在我们当初的小路口。`, `爱是一场持久的马拉松，`, `我会一直跑在你的身后。`, `若你累了就靠在我肩膀，`, `我会为你挡住所有忧伤。`, `你的善良是我爱的理由，`, `你的勇敢让我不再低头。`, `每一天都要比昨天更多，`, `更多的爱意在心頭闪过。`, `這是我們愛情的第幾章，`, `每一頁都閃爍著金色光。`, `不需要成為別人的榜樣，`, `只要我們活得足夠閃亮。`, `守護你是我餘生的責任，`, `寵愛你是我最大的福分。`, `情侶這個稱呼多麼動聽，`, `像是一首永恆的交響樂。`, `慶祝我們正式告別單身，`, `迎接充滿希望的新人生。`, `把這份喜悅分享給天空，`, `讓雲朵都帶著甜蜜入夢。`, `未來的路我們並肩前行，`, `不離不棄是最初的約定。`, `希望你每天都能有笑容，`, `所有的煩惱都隨風成空。`, `每一行文字都代表真心，`, `每一份情感都入木三分。`, `讓我們一起譜寫新篇章，`, `讓愛在時光裡地久天長。`, `百行詩篇寫不盡我心意，`, `唯有用行動來證明愛你。`, `再次祝賀我們結為伴侶，`, `願此生相守永遠不分離。 ❤️`]
-            },
-            'en': {
-                genderTitle: "Are you a boy or a girl?", boyBtn: "I'm a boy", girlBtn: "I'm a girl",
-                proposalTitle: "Will you be with me?", yesBtn: "Yes", noBtn: "No",
-                trapAreYouSure: "Are you sure?", trapLabelT: "Only a 'T' clicks No", trapLabelGay: "Only a 'Gay' clicks No",
-                poem: [`The sun is extraordinarily bright today,`, `Because we finally hold hands.`, `Walked down countless tentative streets,`, `In exchange for this moment of certain embrace.`, `Your name has become my one and only,`, `I only want to spend the rest of my life with you.`, `From now on, no longer walking alone,`, `Every corner has your temperature.`, `Thank you for walking into my world,`, `Lighting up those ordinary four seasons.`, `We agree to grow together,`, `Guarding firmly like a tree.`, `No matter how big the future wind and rain,`, `I will be your warmest harbor.`, `Those heartbeats that were not spoken,`, `Finally have an echo today.`, `The way you smile is the most moving,`, `The most beautiful scenery I have ever seen.`, `Put your hand in my pocket,`, `Feel that most real reliance.`, `Celebrate this hard-won love,`, `Worth irrigating with our whole life.`, `There must be two piping hot breakfasts,`, `There must be you and me to share interesting news at dinner.`, `I like your little temper too,`, `Because that is no defensiveness towards me.`, `I will remember all your hobbies,`, `Strive to become the pride in your heart.`, `May our love words always be fresh,`, `As clear and sweet as the first meeting.`, `Movie ticket stubs collect small secrets,`, `Recording the traces of our approach.`, `The corner of the cafe is still quiet,`, `Witnessed the birth of our love.`, `Although the world always keeps spinning,`, `My gaze only stays for you.`, `The blueprint of the future is all you,`, `Every stroke is written with sweetness.`, `Thank fate for letting us meet,`, `Not letting this regret stay in the world.`, `We are going to travel the world together,`, `See all the famous mountains and great rivers.`, `Also curl up on the sofa to watch plays together,`, `Spend those most ordinary mornings and evenings.`, `Life inevitably has some friction,`, `Communication is our best solution.`, `Remember to give a hug after a quarrel,`, `Don't let the cold war consume all passion.`, `Your happiness is my pursuit,`, `This original aspiration will never rust.`, `Those wishes made under the starry sky,`, `Are step by step manifested in life.`, `See, the moon is also smiling,`, `Congratulating us on finding each other's reliance.`, `Leave the sadness to the past years,`, `Leave all the gentleness to tonight.`, `We are each other's best puzzle pieces,`, `Only together is a perfect map.`, `Cherish this miraculous chemical reaction,`, `It is the most beautiful gift in life.`, `No need for a luxurious ceremony,`, `As long as I have you, it is the best thing.`, `A simple "I miss you, I love you",`, `Can beat all sweet words.`, `I want to grow old slowly with you,`, `See many wrinkles in the mirror.`, `At that time, still holding your hand,`, `Walking at the original street corner.`, `Love is a long-lasting marathon,`, `I will always run behind you.`, `If you are tired, lean on my shoulder,`, `I will block all sorrow for you.`, `Your kindness is the reason I love,`, `Your bravery makes me no longer bow my head.`, `Every day more than yesterday,`, `More love flashes in my heart.`, `Which chapter of our love is this,`, `Every page glistens with golden light.`, `No need to be other's role model,`, `As long as we live brightly enough.`, `Guarding you is the responsibility of my rest life,`, `Pampering you is my greatest blessing.`, `The title "Couple" is so pleasant to hear,`, `Like an eternal symphony.`, `Celebrate our formal bid farewell to singlehood,`, `Welcome a new life full of hope.`, `Share this joy with the sky,`, `Let the clouds bring sweetness to dreams.`, `The road of the future we walk side by side,`, `Never leave, never abandon is the original agreement.`, `Hope you can have a smile every day,`, `All troubles disappear with the wind.`, `Every line of text represents sincerity,`, `Every emotion is deeply ingrained.`, `Let's write a new chapter together,`, `Let love last forever in time.`, `A hundred lines of poetry cannot express my heart,`, `Only use actions to prove I love you.`, `Congratulations again on our becoming partners,`, `May this life together, never separate. ❤️`]
-            },
-            'ja': {
-                genderTitle: "あなたは男の子？女の子？", boyBtn: "男の子です", girlBtn: "女の子です",
-                proposalTitle: "付き合ってくれる？", yesBtn: "はい", noBtn: "いいえ",
-                trapAreYouSure: "本当？", trapLabelT: "「T」だけが「いいえ」を押す", trapLabelGay: "「ゲイ」だけが「いいえ」を押す",
-                poem: [`今日の太陽は格別に輝いている。`, `ついに手を繋いだから。`, `何度も探り合った街を歩き、`, `この確かな抱擁の瞬間を迎えた。`, `あなたの名前は私の唯一となり、`, `残りの人生をあなたと過ごしたい。`, `もう一人で歩くことはない。`, `街角のすべてにあなたの体温を感じる。`, `私の世界に来てくれてありがとう。`, `平凡な四季を彩ってくれた。`, `一緒に成長しようと約束した。`, `木のようにしっかりと守り抜くと。`, `未来の風雨がどんなに強くても、`, `私があなたの最も暖かい港になる。`, `言葉にできなかった鼓動が、`, `今日、ついにこだまとなった。`, `あなたの笑顔が最も心を動かす、`, `今まで見た中で最も美しい景色だ。`, `あなたの手を私のポケットに入れ、`, `最もリアルな依存を感じて。`, `この得がたい愛を祝おう、`, `一生をかけて育む価値がある。`, `朝食は熱々のものを二つ。`, `夕食はあなたと面白いニュースを共有しよう。`, `あなたの少しのわがままも好きだ、`, `那是對我的無防備。`, `あなたの趣味をすべて覚えるよ。`, `あなたの心の中で誇りになれるように。`, `私たちの愛の言葉が常に新鮮でありますように、`, `出会った時のように清らかで甘く。`, `映画の半券は小さな秘密を収集している、`, `私たちが近づいた軌跡を記録している。`, `カフェの隅は相変わらず静かで、`, `私たちの愛の誕生を見守った。`, `世界は常に回り続けているけれど、`, `私の視線はあなただけのために留まる。`, `未来の青写真はすべてあなただ、`, `一筆一筆が甘さで満たされている。`, `出会えた縁に感謝する。`, `この後悔をこの世に残さなかったことに。`, `一緒に世界を旅しよう、`, `有名な名山や大川を見て回ろう。`, `ソファで一緒にドラマを見よう、`, `最も平凡な朝と夜を過ごそう。`, `生活には避けられない摩擦もある、`, `コミュニケーションが私たちの最良の解決策だ。`, `喧嘩の後も抱きしめることを忘れないで、` , `冷戦が情熱を消費してしまわないように。`, `あなたの幸せが私の追求だ、`, `この初心は永遠に錆びない。`, `星空の下でした願い事が、`, `一歩ずつ生活の中で体現されている。`, `ほら、月も笑っている、`, `お互いの支えを見つけたことを祝っている。`, `悲しみは過ぎ去った歳月に残し、`, `優しさをすべて今夜に残そう。`, `私たちはお互いの最高のパズル、`, `合わさって初めて完璧な地図になる。`, `この奇妙な化学反應を大切にしよう、`, `それは人生で最も美しい贈り物だ。`, `豪華な儀式は必要ない、`, `あなたがいれば、それが最高のことだ。`, `シンプルな「会いたい、愛している」、`, `すべての甘い言葉に勝る。`, `あなたと一緒にゆっくり老いていきたい、`, `鏡の中のシワが増えるのを見よう。`, `その時もまだあなたの手を握り、`, `かつての街角を歩いている。`, `愛は長く続くマラソンだ、`, `私は常にあなたの後ろを走る。`, `疲れたら私の肩に寄りかかって、`, `私はすべての悲しみを遮る。`, `あなたの優しさが愛する理由、`, `あなたの勇気が私をもううつむかせない。`, `毎日、昨日よりも多く、`, `より多くの愛が心にひらめく。`, `これは私たちの愛の第何章だろう、`, `すべてのページが金色に輝いている。`, `誰かの模範になる必要はない、`, `私たちが十分に輝いていれば。`, `あなたを守ることが私の残りの人生の責任、`, `あなたを愛おしむことが私の最大の幸福。`, `カップルという呼び名はなんと心地よい、`, `永遠の交響曲のようだ。`, `独身との正式な別れを祝おう、`, `希望に満ちた新しい人生を迎えよう。`, `この喜びを空と共有しよう、`, `雲が甘さを夢に運ぶように。`, `未來の道を私たちは並んで進む、`, `離れず見捨てずが最初の約束。`, `毎日あなたが笑顔でいられますように、`, `すべての悩みが風と共に消えますように。`, `すべての一行の文字が本心を表し、`, `すべての感情が深く刻まれている。`, `一緒に新しい章を書こう、`, `愛が時の中で永遠に続きますように。`, `百行の詩では私の心を表しきれない、`, `行動だけであなたを愛していることを証明する。`, `私たちがパートナーになったことを再び祝う、`, `この人生を共に、永遠に離れない。 ❤️`]
-            }
+        let userName = "";
+        let userLabel = "";
+        let currentLang = 'tc';
+        const texts = {
+            tc: { welcome: "在開始之前...", gender: "妳/他是...", pro: "妳願意跟我在一起嗎？", sure: "妳確定？按不同意的就是", yes: "同意", no: "不同意" },
+            sc: { welcome: "在开始之前...", gender: "妳/他是...", pro: "妳愿意跟我在一起吗？", sure: "妳确定？按不同意的就是", yes: "同意", no: "不同意" },
+            en: { welcome: "Before we start...", gender: "You are...", pro: "Will you be with me?", sure: "Sure? Clicking No means you're", yes: "Yes", no: "No" },
+            ja: { welcome: "始める前に...", gender: "あなたは...", pro: "付き合ってくれる？", sure: "本当？いいえを押すのは", yes: "はい", no: "いいえ" }
         };
 
-        // --- 核心變數 ---
-        let currentLang = 'zh-TW';
-        let userLabel = ""; 
-        const elements = {
-            genderBox: document.getElementById('gender-box'),
-            proposalBox: document.getElementById('proposal-box'),
-            confirmBox: document.getElementById('confirm-box'),
-            trapText: document.getElementById('trap-text'),
-            fireworksCanvas: document.getElementById('fireworks'),
-            poemContainer: document.getElementById('poem-container'),
-            poemTextArea: document.getElementById('poem-text'),
-            noBtn: document.getElementById('no-btn-1'),
-            heartContainer: document.getElementById('heart-container'),
-            langSelect: document.getElementById('lang-select'),
-            themeToggle: document.getElementById('theme-toggle')
-        };
-
-        // --- 初始化 ---
-        function init() {
-            updateLanguage();
-            for(let i=0; i<15; i++) { setTimeout(createHeart, i * 300); }
-            setInterval(createHeart, 800); 
+        function toggleTheme() {
+            const body = document.body;
+            body.setAttribute('data-theme', body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         }
 
-        // --- 設置功能 (語言/主題) ---
-        elements.langSelect.addEventListener('change', (e) => {
-            currentLang = e.target.value;
-            updateLanguage();
-        });
+        // 隨機漂浮愛心
+        setInterval(() => {
+            if(document.getElementById('poem-wrap').style.display === 'block') return;
+            const h = document.createElement('div');
+            h.className = 'heart';
+            h.innerHTML = '❤️';
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            h.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.body.appendChild(h);
+            setTimeout(() => h.remove(), 6000);
+        }, 500);
 
-        elements.themeToggle.addEventListener('click', () => {
-            const isDark = document.body.getAttribute('data-theme') === 'dark';
-            document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-            elements.themeToggle.innerText = isDark ? '☀️' : '🌙';
-        });
-
-        function updateLanguage() {
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                el.innerText = i18n[currentLang][key];
-            });
-            if (elements.confirmBox.style.display === 'block') {
-                updateTrapText();
-            }
-        }
-
-        // --- 背景愛心動畫 ---
-        function createHeart() {
-            if(elements.poemContainer.style.display === 'block') return;
-
-            const heart = document.createElement('div');
-            heart.classList.add('bg-heart');
-            heart.innerText = '❤️';
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.top = (100 + Math.random() * 20) + 'vh'; 
+        function checkStart() {
+            userName = document.getElementById('user-name').value;
+            const code = document.getElementById('secret-code').value;
+            if(!userName) return alert("請輸入名字哦！");
+            if(code !== "0520") return alert("秘密日期不對哦！"); // 這裡改你的日期
             
-            const size = (0.8 + Math.random() * 1.5) + 'rem';
-            heart.style.fontSize = size;
-            heart.style.opacity = 0.4 + Math.random() * 0.4;
+            document.getElementById('start-box').style.display = 'none';
+            document.getElementById('gender-box').style.display = 'block';
+        }
+
+        function setLabel(type) {
+            userLabel = (type === 'gay') ? "Gay" : "T";
+            document.getElementById('gender-box').style.display = 'none';
+            document.getElementById('pro-box').style.display = 'block';
+        }
+
+        // 修正後的按鈕逃跑邏輯
+        const noBtn = document.getElementById('no-btn');
+        function moveNo() {
+            const padding = 50;
+            // 使用視窗實際可見寬高，減去按鈕本身寬高
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
             
-            const duration = (6 + Math.random() * 6) + 's';
-            heart.style.animationDuration = duration;
-
-            elements.heartContainer.appendChild(heart);
-            setTimeout(() => heart.remove(), parseInt(duration) * 1000);
-        }
-
-        // --- 流程邏輯 ---
-        // 1. 選擇性別
-        document.getElementById('boy-btn').onclick = () => { 
-            userLabel = i18n[currentLang].trapLabelGay; 
-            showProposal(); 
-        };
-        document.getElementById('girl-btn').onclick = () => { 
-            userLabel = i18n[currentLang].trapLabelT; 
-            showProposal(); 
-        };
-
-        function showProposal() {
-            elements.genderBox.style.display = 'none';
-            elements.proposalBox.style.display = 'block';
-        }
-
-        // 2. 逃跑機制 (不同意按鈕)
-        function moveNoBtn() {
-            // 強制加上 floating 類別，讓按鈕具備亮色背景與邊框，防隱身
-            elements.noBtn.classList.add('floating');
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
             
-            const rect = elements.noBtn.getBoundingClientRect();
-            const margin = 30; // 安全邊距
-
-            // 計算可容納的最大 X 與 Y
-            const maxX = window.innerWidth - rect.width - margin;
-            const maxY = window.innerHeight - rect.height - margin;
-
-            // 確保極小螢幕下也不會算出負數
-            const safeMaxX = Math.max(margin, maxX);
-            const safeMaxY = Math.max(margin, maxY);
-
-            // 在安全範圍內隨機算出一個位置
-            const randomX = margin + Math.random() * (safeMaxX - margin);
-            const randomY = margin + Math.random() * (safeMaxY - margin);
-
-            elements.noBtn.style.left = randomX + 'px';
-            elements.noBtn.style.top = randomY + 'px';
-            elements.noBtn.style.margin = '0'; // 清除任何干擾的置中 margin
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
         }
 
-        elements.noBtn.addEventListener('mouseover', moveNoBtn);
-        elements.noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNoBtn(); });
-
-        // 3. 陷阱：真的點到不同意
-        elements.noBtn.onclick = () => {
-            elements.proposalBox.style.display = 'none';
-            updateTrapText();
-            elements.confirmBox.style.display = 'block';
+        noBtn.addEventListener('mouseover', moveNo);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
+        noBtn.onclick = () => {
+            document.getElementById('pro-box').style.display = 'none';
+            document.getElementById('t-trap').innerText = `${texts[currentLang].sure} ${userLabel}`;
+            document.getElementById('trap-box').style.display = 'block';
         };
 
-        function updateTrapText() {
-            const areYouSure = i18n[currentLang].trapAreYouSure;
-            elements.trapText.innerHTML = `${areYouSure}<br><span style="color:red; font-size:1.6rem;">${userLabel}</span>`;
-        }
-
-        // 4. 同意與最後慶祝
-        document.getElementById('yes-btn-1').onclick = startCelebration;
-        document.getElementById('yes-btn-2').onclick = startCelebration;
-
-        function startCelebration() {
-            elements.proposalBox.style.display = 'none';
-            elements.confirmBox.style.display = 'none';
-            document.getElementById('settings-bar').style.display = 'none';
+        function success() {
+            document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+            document.getElementById('top-bar').style.display = 'none';
+            const wrap = document.getElementById('poem-wrap');
+            wrap.style.display = 'block';
             
-            elements.fireworksCanvas.style.display = 'block';
-            elements.poemContainer.style.display = 'block';
-            startFireworks();
-            startPoemTypewriter();
+            const poemLines = [
+                `今天的陽光人格外燦爛，${userName}，`,
+                `因為我們終於牽起雙手。`,
+                // ... 此處省略其餘詩句以便展示，程式碼中會完整放入 ...
+                `慶祝我們正式告別單身，`,
+                `迎接充滿希望的新人生。`,
+                `願此生相守永遠不分離，${userName}。 ❤️`
+            ];
+            // 提示：你可以把之前那100行詩放入下面這段陣列中
+            const fullPoem = [
+                `今天的陽光人格外燦爛，${userName}，`,
+                `因為我們終於牽起雙手。`,
+                `走過無數次試探的街道，`,
+                `換來這一刻確定的擁抱。`,
+                `你的名字成了我的唯一，`,
+                `我的餘生只想和你共度。`,
+                `從此不再是一個人走路，`,
+                `每個轉角都有你的溫度。`,
+                `謝謝你走進我的世界裡，`,
+                `點亮了那些平凡的四季。`,
+                `我們約定好要一起成長，`,
+                `像樹木一樣堅定地守護。`,
+                `不管未來的風雨有多大，`, `我都會是你最暖的港灣。`, `那些沒說出口的心跳聲，`, `終於在今天有了回響聲。`, `你笑起來的樣子最動人，`, `是我見過最美麗的風景。`, `把你的手放進我的口袋，`, `感受那份最真實的依賴。`, `慶祝這份得來不易的愛，`, `值得我們用一輩子灌溉。`, `早餐要有兩份熱氣騰騰，`, `晚餐要有你我分享趣聞。`, `你的小脾氣我也都喜歡，`, `因為那是對我的不設防。`, `我會記住你所有的愛好，`, `努力成為你心中的驕傲。`, `願我們的情話永遠新鮮，`, `像初見時那樣清澈甘甜。`, `電影票根收藏著小祕密，`, `記錄著我們靠近的痕跡。`, `咖啡廳的角落依舊安靜，`, `見證了我們愛情的誕生。`, `雖然世界總是不停旋轉，`, `但我的目光只為你停留。`, `未來的藍圖裡全都是你，`, `每一筆一劃都寫滿甜蜜。`, `感謝緣分讓我們相遇見，`, `沒讓這份遺憾留在人間。`, `我們要一起去環遊世界，`, `看遍所有的名山與大川。`, `也要一起窩在沙發看戲，`, `度過那些最平凡的晨夕。`, `生活難免會有一些摩擦，`, `溝通是我們最好的解法。`, `吵架後也要記得給擁抱，`, `別讓冷戰把熱情都消耗。`, `你的幸福就是我的追求，`, `這份初心永遠不會生鏽。`, `星空下許過的那些心願，`, `正一步步在生活中體現。`, `你看那月亮也正在微笑，`, `祝賀我們找到彼此依靠。`, `把悲傷留給過往的歲月，`, `把溫柔全都留給了今夜。`, `我們是彼此最好的拼圖，`, `合在一起才算完美地圖。`, `珍惜這份奇妙的化學反應，`, `它是生命中最美的禮物。`, `不需要多麼奢華的儀式，`, `只要有你就是最好的事。`, `簡單的一句我想你愛你，`, `就能勝過所有的甜言密語。`, `我想和你一起慢慢變老，`, `看鏡子裡的皺紋長不少。`, `到那時依然牽著你的手，`, `走在我們當初的小路口。`, `愛是一場持久的馬拉松，`, `我會一直跑在你的身後。`, `若你累了就靠在我肩膀，`, `我會為你擋住所有憂傷。`, `你的善良是我愛的理由，`, `你的勇敢讓我不再低頭。`, `每一天都要比昨天更多，`, `更多的愛意在心頭閃過。`, `這是我們愛情的第幾章，`, `每一頁都閃爍著金色光。`, `不需要成為別人的榜樣，`, `只要我們活得足夠閃亮。`, `守護你是我餘生的責任，`, `寵愛你是我最大的福分。`, `情侶這個稱呼多麼動聽，`, `像是一首永恆的交響樂。`, `慶祝我們正式告別單身，`, `迎接充滿希望的新人生。`, `把這份喜悅分享給天空，`, `讓雲朵都帶著甜蜜入夢。`, `未來的路我們並肩前行，`, `不離不棄是最初的約定。`, `希望你每天都能有笑容，`, `所有的煩惱都隨風成空。`, `每一行文字都代表真心，`, `每一份情感都入木三分。`, `讓我們一起譜寫新篇章，`, `讓愛在時光裡地久天長。`, `百行詩篇寫不盡我心意，`, `唯有用行動來證明愛你。`, `再次祝賀我們結為伴侶，`, `願此生相守永遠不分離，${userName}。`
+            ];
+
+            const container = document.getElementById('poem-content');
+            let i = 0;
+            function addLine() {
+                if(i < fullPoem.length) {
+                    const l = document.createElement('span');
+                    l.className = 'line';
+                    l.innerText = fullPoem[i];
+                    container.appendChild(l);
+                    wrap.scrollTo({ top: wrap.scrollHeight, behavior: 'smooth' });
+                    i++;
+                    setTimeout(addLine, 1500);
+                }
+            }
+            addLine();
         }
-
-        // --- 打字機長詩動畫 ---
-        function startPoemTypewriter() {
-            const poemLines = i18n[currentLang].poem;
-            let currentLine = 0;
-            elements.poemTextArea.innerHTML = "";
-
-            function typeNextLine() {
-                if (currentLine < poemLines.length) {
-                    const span = document.createElement('span');
-                    span.classList.add('poem-line');
-                    span.innerText = poemLines[currentLine];
-                    elements.poemTextArea.appendChild(span);
-                    elements.poemContainer.scrollTop = elements.poemContainer.scrollHeight;
-                    currentLine++;
-                    setTimeout(typeNextLine, 1800); 
-                }
-            }
-            setTimeout(typeNextLine, 1000);
-        }
-
-        // --- 煙火程式碼 (Canvas) ---
-        function startFireworks() {
-            const ctx = elements.fireworksCanvas.getContext('2d');
-            elements.fireworksCanvas.width = window.innerWidth;
-            elements.fireworksCanvas.height = window.innerHeight;
-            let particles = [];
-            class Particle {
-                constructor(x, y, color) {
-                    this.x = x; this.y = y; this.color = color;
-                    this.velocity = { x: (Math.random()-0.5)*8, y: (Math.random()-0.5)*12 };
-                    this.alpha = 1; this.friction = 0.96; this.gravity = 0.15;
-                }
-                draw() {
-                    ctx.save(); ctx.globalAlpha = this.alpha;
-                    ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI*2);
-                    ctx.fillStyle = this.color; ctx.fill(); ctx.restore();
-                }
-                update() {
-                    this.velocity.x *= this.friction; this.velocity.y *= this.friction;
-                    this.velocity.y += this.gravity;
-                    this.x += this.velocity.x; this.y += this.velocity.y;
-                    this.alpha -= 0.015;
-                }
-            }
-            function animate() {
-                if(elements.fireworksCanvas.style.display === 'none') return;
-                requestAnimationFrame(animate);
-                ctx.fillStyle = 'rgba(10, 10, 10, 0.15)';
-                ctx.fillRect(0, 0, elements.fireworksCanvas.width, elements.fireworksCanvas.height);
-                particles.forEach((p, i) => {
-                    if (p.alpha > 0) { p.update(); p.draw(); }
-                    else { particles.splice(i, 1); }
-                });
-                if (Math.random() < 0.06) {
-                    const x = Math.random()*elements.fireworksCanvas.width;
-                    const y = Math.random()*elements.fireworksCanvas.height*0.4;
-                    const color = `hsl(${Math.random()*360}, 100%, 65%)`;
-                    for(let i=0; i<35; i++) particles.push(new Particle(x, y, color));
-                }
-            }
-            animate();
-        }
-
-        window.onresize = () => {
-            if(elements.fireworksCanvas.style.display === 'block') {
-                elements.fireworksCanvas.width = window.innerWidth;
-                elements.fireworksCanvas.height = window.innerHeight;
-            }
-        };
-
-        init();
     </script>
 </body>
 </html>
