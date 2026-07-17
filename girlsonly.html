@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快樂驚喜網站 · For You</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- GSAP CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
+    
+    <!-- Canvas Confetti & Particles.js -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-highlight: rgba(255, 255, 255, 0.25);
+            --text-primary: #f5f5f7;
+            --text-secondary: #86868b;
+            --apple-blue: #0071e3;
+            --apple-blue-hover: #147ce5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'SF Pro Display', 'Noto Sans TC', -apple-system, sans-serif;
+            background: #000;
+            color: var(--text-primary);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1000px;
+        }
+
+        /* 背景系統 */
+        #bg-canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 50%, #111524 0%, #050508 100%);
+        }
+
+        .ambient-glow {
+            position: absolute;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(0, 113, 227, 0.15) 0%, rgba(142, 68, 173, 0.1) 50%, transparent 100%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-25%, -50%);
+            filter: blur(80px);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Liquid Glass 液態玻璃核心樣式 */
+        .liquid-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(210%);
+            -webkit-backdrop-filter: blur(30px) saturate(210%);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid var(--glass-highlight);
+            border-left: 1px solid var(--glass-highlight);
+            box-shadow: 
+                0 4px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 2px rgba(255, 255, 255, 0.15),
+                inset 0 -10px 20px rgba(255, 255, 255, 0.02);
+            border-radius: 28px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s ease;
+        }
+
+        .liquid-glass::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 45%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 55%
+            );
+            transform: rotate(-45deg);
+            transition: transform 0.6s ease;
+            pointer-events: none;
+        }
+
+        .liquid-glass:hover::before {
+            transform: translate(50%, 50%) rotate(-45deg);
+        }
+
+        /* 全域頁面架構 */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.95) translateZ(-50px);
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1) translateZ(0);
+        }
+
+        /* 第一頁：鎖定與解鎖狀態 */
+        .lock-card {
+            width: 100%;
+            max-width: 440px;
+            padding: 40px 30px;
+            text-align: center;
+            transform-style: preserve-3d;
+        }
+
+        .lock-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            display: inline-block;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+        }
+
+        h1.headline {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            background: linear-gradient(180deg, #ffffff 0%, #d2d2d7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtext {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .hint-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 16px;
+            border-radius: 99px;
+            font-size: 13px;
+            color: #ffbc05;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* 經典 Apple 操控按鈕 */
+        .apple-btn {
+            background: var(--apple-blue);
+            color: #fff;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 99px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 113, 227, 0.4);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .apple-btn:hover {
+            background: var(--apple-blue-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 113, 227, 0.5);
+        }
+
+        .apple-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 第二頁與第三頁：照片舞台 */
+        .photo-stage {
+            max-width: 500px;
+            width: 100%;
+            cursor: pointer;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .photo-frame {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            background: #111;
+            margin-bottom: 20px;
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .photo-stage:hover .photo-frame img {
+            transform: scale(1.04);
+        }
+
+        /* 第三頁信件滾動與文字生成區域 */
+        .letter-scroll-wrapper {
+            width: 100%;
+            max-width: 600px;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 10px;
+            margin-top: 20px;
+            mask-image: linear-gradient(to bottom, transparent 0%, white 5%, white 95%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, white 5%, white 95%, transparent 100%);
+        }
+
+        /* 客製化捲動軸 */
+        .letter-scroll-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+        .letter-scroll-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .letter-scroll-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.15);
+            border-radius: 99px;
+        }
+
+        .letter-container {
+            padding: 30px;
+            text-align: left;
+            line-height: 1.8;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            white-space: pre-wrap;
+            color: #e8e8ed;
+        }
+
+        .typed-cursor {
+            color: var(--apple-blue);
+            font-weight: bold;
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* 管理員登入視窗 */
+        .admin-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s ease;
+        }
+
+        .admin-modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .admin-card {
+            width: 90%;
+            max-width: 360px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+
+        .admin-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .admin-input:focus {
+            border-color: var(--apple-blue);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.2);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.cancel {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+        .modal-btn.cancel:hover { background: rgba(255,255,255,0.15); }
+        
+        .modal-btn.confirm {
+            background: var(--apple-blue);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-btn.confirm:hover { background: var(--apple-blue-hover); }
+
+        /* 音樂控制中心 */
+        .audio-controller {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 99px;
+        }
+
+        .audio-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .audio-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .track-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            max-width: 100px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 底部註腳 */
+        footer {
+            position: absolute;
+            bottom: 16px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+            z-index: 5;
+            opacity: 0;
+        }
+
+        /* 共用光炫掃描與碎裂動畫輔助 */
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-25deg);
+            pointer-events: none;
+        }
+
+        /* 轉場用全螢幕閃光層 */
+        #flash-overlay {
+            position: fixed;
+            top:0; left:0; width:100%; height:100%;
+            background: #fff;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 粒子與環境氛圍底座 -->
+    <div id="bg-canvas-container"></div>
+    <div class="ambient-glow"></div>
+    <div id="flash-overlay"></div>
+
+    <!-- 音樂控制元件 -->
+    <div class="audio-controller liquid-glass">
+        <button class="audio-btn" id="play-pause-btn" title="播放/暫停"><i class="fas fa-play"></i></button>
+        <button class="audio-btn" id="mute-btn" title="靜音"><i class="fas fa-volume-up"></i></button>
+        <span class="track-info">Lo-Fi Piano Mood</span>
+    </div>
+
+    <!-- ==================== 第一頁 ==================== -->
+    <div id="page1" class="page active">
+        <div class="lock-card liquid-glass" id="main-lock-card">
+            <div class="scan-line" id="card-scan"></div>
+            <div class="lock-icon" id="lock-trigger">🔒</div>
+            <h1 class="headline" id="lock-title">網站已被擁有者鎖定</h1>
+            <p class="subtext" id="lock-desc">網站已被你的寶貝邱O宸鎖定，請稍後再試。</p>
+            <div id="lock-action-area">
+                <div class="hint-badge"><i class="fas fa-lightbulb"></i> 小提示：7/19 再回來查看</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== 第二頁 ==================== -->
+    <div id="page2" class="page">
+        <div class="photo-stage" id="stage1">
+            <div class="photo-frame liquid-glass">
+                <img id="img1" alt="Moments" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3C/svg%3E">
+            </div>
+            <p class="subtext" style="margin-bottom:0; color:var(--text-primary);"><i class="fas fa-hand-pointer" style="margin-right:6px; color:var(--apple-blue);"></i> 點一下圖片即可下一頁</p>
+        </div>
+    </div>
+
+    <!-- ==================== 第三頁 ==================== -->
+    <div id="page3" class="page">
+        <div class="photo-stage" id="stage2" style="max-width: 400px; margin-bottom: 10px;">
+            <div class="photo-frame liquid-glass" style="aspect-ratio: 16/10;">
+                <img id="img2" alt="Memory Lane" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 10'%3E%3C/svg%3E">
+            </div>
+        </div>
+        
+        <button class="apple-btn" id="read-btn" style="opacity: 0; pointer-events: none; margin-top: 10px;">閱讀完畢</button>
+
+        <div class="letter-scroll-wrapper" id="letter-wrapper" style="display: none;">
+            <div class="letter-container liquid-glass" id="letter-box"></div>
+        </div>
+    </div>
+
+    <!-- 管理員後門 Modal -->
+    <div class="admin-modal-backdrop" id="admin-modal">
+        <div class="admin-card liquid-glass">
+            <h2 class="headline" style="font-size:22px; margin-bottom:20px;">管理員安全驗證</h2>
+            <div class="input-group">
+                <label for="adm-user">帳號</label>
+                <input type="text" id="adm-user" class="admin-input" autocomplete="off">
+            </div>
+            <div class="input-group" style="margin-bottom:24px;">
+                <label for="adm-pass">密碼</label>
+                <input type="password" id="adm-pass" class="admin-input">
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" id="adm-cancel">取消</button>
+                <button class="modal-btn confirm" id="adm-confirm">
+                    <span id="btn-text">驗證並解鎖</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 頁尾技術支援 -->
+    <footer id="apple-footer">
+        技術支援 · ChatGPT · Gemini
+    </footer>
+
+    <script>
+        // 目標解鎖時間常量
+        const TARGET_DATE = new Date('2026-07-19T00:00:00').getTime();
+        
+        // 圖片資源路徑
+        const URL_IMG1 = "https://sdmntprkoreacentral.oaiusercontent.com/files/00000000-e298-7206-b4f4-cd1065e27d79/raw?se=2026-07-17T13:21:08Z&sp=r&sv=2026-02-06&sr=b&scid=cf352a22-7afc-4877-917c-1267e49ecd4b&skoid=9063adf3-a524-4acf-b70a-8731b33f2f50&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-07-17T10:02:53Z&ske=2026-07-19T10:02:53Z&sks=b&skv=2026-02-06&sig=M3SOJdkFYbFlEwmNaRKyJ40CrAJQ39lAsNLKXRYIhTU%3D";
+        const URL_IMG2 = "https://sdmntprjapaneast.oaiusercontent.com/files/00000000-07e4-7209-bdc2-f38e319fb227/raw?se=2026-07-17T13:21:08Z&sp=r&sv=2026-02-06&sr=b&scid=791ec658-64fb-43e5-9160-0de5854fbf97&skoid=9063adf3-a524-4acf-b70a-8731b33f2f50&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-07-17T09:49:13Z&ske=2026-07-19T09:49:13Z&sks=b&skv=2026-02-06&sig=RepFqp/NWlJvwS8%2B6cGZgInMOjT4xI7C2KNzVZpbQYc%3D";
+
+        // 信件文本內容
+        const BIRTHDAY_LETTER = `親愛的寶貝：\n\n生日快樂！🎂💗\n\n在這個特別的日子裡，我想把全世界最美好的祝福都送給你。謝謝你一直以來的陪伴，你的笑容就像冬日裡的暖陽，總能瞬間融化我所有疲憊。與你共同度過的每一個瞬間，不論是瘋狂大笑還是安靜相依，都是我心中最珍貴的寶藏。\n\n未來的每一天，無論晴天雨天，我都想繼續牽著你的手，一起探索這個世界的所有美麗、一起解鎖更多未知的生活冒險。願你新的一歲裡，所有的願望都能如期而至，永遠無憂無慮，被幸福滿滿地包圍！\n\n天天都愛你，生日快樂！✨🎉`;
+
+        // 音效合成器 (Web Audio API)
+        const AudioSys = {
+            ctx: null,
+            init() { 
+                if(!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); 
+            },
+            play(type) {
+                this.init();
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(150, now + 0.1);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.1);
+                    osc.start(now); osc.stop(now + 0.1);
+                } else if (type === 'success') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
+                    osc.frequency.setValueAtTime(1046.50, now + 0.36); // C6
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.6);
+                    osc.start(now); osc.stop(now + 0.6);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(100, now + 0.25);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.25);
+                    osc.start(now); osc.stop(now + 0.25);
+                } else if (type === 'type') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800 + Math.random() * 400, now);
+                    gain.gain.setValueAtTime(0.02, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.03);
+                    osc.start(now); osc.stop(now + 0.03);
+                } else if (type === 'shatter') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(1200, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.4);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.4);
+                    osc.start(now); osc.stop(now + 0.4);
+                }
+            },
+            // 利用 Web Audio 產生優雅的背景輕音樂旋律
+            bgMusicNode: null,
+            isBgPlaying: false,
+            startBgMelody() {
+                this.init();
+                if(this.isBgPlaying) return;
+                this.isBgPlaying = true;
+                
+                let notes = [57, 60, 64, 67, 59, 62, 66, 69, 55, 59, 62, 66, 53, 57, 60, 64]; // 循環和弦音符
+                let idx = 0;
+
+                const playNextNote = () => {
+                    if(!this.isBgPlaying) return;
+                    let now = this.ctx.currentTime;
+                    let osc = this.ctx.createOscillator();
+                    let g = this.ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    // MIDI 轉頻率
+                    osc.frequency.setValueAtTime(440 * Math.pow(2, (notes[idx] - 69) / 12), now);
+                    
+                    g.gain.setValueAtTime(0, now);
+                    g.gain.linearRampToValueAtTime(0.06, now + 0.5); // 柔和渐入
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 2.4);
+
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 2.5);
+
+                    idx = (idx + 1) % notes.length;
+                    setTimeout(playNextNote, 1200);
+                };
+                playNextNote();
+            },
+            stopBgMelody() {
+                this.isBgPlaying = false;
+            }
+        };
+
+        // 初始化背景精緻粒子系統 (Particles.js)
+        particlesJS('bg-canvas-container', {
+            "particles": {
+                "number": { "value": 45, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": ["#ffffff", "#0071e3", "#ffbc05", "#a370f7"] },
+                "shape": { "type": ["circle", "edge"] },
+                "opacity": { "value": 0.4, "random": true, "anim": { "enable": true, "speed": 0.5, "opacity_min": 0.1, "sync": false } },
+                "size": { "value": 3, "random": true, "anim": { "enable": true, "speed": 1, "size_min": 1, "sync": false } },
+                "line_linked": { "enable": false },
+                "move": { "enable": true, "speed": 0.8, "direction": "top", "random": true, "straight": false, "out_mode": "out" }
+            },
+            "interactivity": { "detect_on": "canvas", "events": { "onhover": { "enable": false } } }
+        });
+
+        // 頁面切換控制
+        function switchPage(targetId) {
+            const current = document.querySelector('.page.active');
+            const next = document.getElementById(targetId);
+            
+            if (current) {
+                gsap.to(current, {
+                    opacity: 0,
+                    scale: 0.92,
+                    z: -30,
+                    duration: 0.6,
+                    ease: "power3.inOut",
+                    onComplete: () => {
+                        current.classList.remove('active');
+                        activateNext();
+                    }
+                });
+            } else {
+                activateNext();
+            }
+
+            function activateNext() {
+                next.classList.add('active');
+                gsap.fromTo(next, 
+                    { opacity: 0, scale: 1.08, z: 30 },
+                    { opacity: 1, scale: 1, z: 0, duration: 0.8, ease: "power4.out" }
+                );
+            }
+        }
+
+        // 核心邏輯控制器
+        let lockClickCount = 0;
+        const lockTrigger = document.getElementById('lock-trigger');
+        const adminModal = document.getElementById('admin-modal');
+
+        // 監聽鎖頭點擊 (隱藏管理員通道)
+        lockTrigger.addEventListener('click', () => {
+            if (document.getElementById('lock-title').innerText.includes('解鎖')) return;
+            lockClickCount++;
+            AudioSys.play('click');
+            
+            // 微幅彈跳動畫
+            gsap.fromTo(lockTrigger, {scale: 1.2}, {scale: 1, duration: 0.3, ease: "bounce.out"});
+
+            if (lockClickCount >= 10) {
+                lockClickCount = 0;
+                openAdminModal();
+            }
+        });
+
+        function openAdminModal() {
+            adminModal.classList.add('active');
+            gsap.fromTo('.admin-card', {scale: 0.8, y: 30}, {scale:1, y:0, duration:0.5, ease:"power4.out"});
+            document.getElementById('adm-user').focus();
+        }
+
+        function closeAdminModal() {
+            gsap.to('.admin-card', {scale: 0.8, y: 30, duration:0.3, ease:"power3.in", onComplete: () => {
+                adminModal.classList.remove('active');
+            }});
+        }
+
+        document.getElementById('adm-cancel').addEventListener('click', closeAdminModal);
+        adminModal.addEventListener('click', (e) => { if(e.target === adminModal) closeAdminModal(); });
+
+        // 處理管理員驗證
+        function handleAdminLogin() {
+            const u = document.getElementById('adm-user').value;
+            const p = document.getElementById('adm-pass').value;
+            const btnText = document.getElementById('btn-text');
+
+            AudioSys.play('click');
+            btnText.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            setTimeout(() => {
+                if (u === 'admin' && p === '12345678') {
+                    AudioSys.play('success');
+                    closeAdminModal();
+                    triggerUnlockProcess();
+                } else {
+                    AudioSys.play('error');
+                    btnText.innerText = '驗證並解鎖';
+                    document.getElementById('adm-pass').value = '';
+                    // Apple Style 搖晃拒絕動畫
+                    gsap.fromTo('.admin-card', {x: -12}, {x: 0, duration: 0.4, ease: "rough({strength: 8, points: 10})"});
+                }
+            }, 800);
+        }
+
+        document.getElementById('adm-confirm').addEventListener('click', handleAdminLogin);
+        window.addEventListener('keydown', (e) => {
+            if (!adminModal.classList.contains('active')) return;
+            if (e.key === 'Enter') handleAdminLogin();
+            if (e.key === 'Escape') closeAdminModal();
+        });
+
+        // 檢查系統狀態與時間判定
+        function checkTimeAndInit() {
+            if (Date.now() >= TARGET_DATE) {
+                triggerUnlockProcess();
+            } else {
+                // 精緻鎖定頁面漂浮與呼吸特效
+                gsap.to('#main-lock-card', { y: -10, duration: 3, repeat: -1, yoyo: true, ease: "power1.inOut" });
+                gsap.to('#card-scan', { left: '150%', duration: 2.5, repeat: -1, ease: "power2.inOut", repeatDelay: 1 });
+            }
+        }
+
+        // 解鎖核心流程
+        function triggerUnlockProcess() {
+            // 安全載入圖片資源
+            document.getElementById('img1').src = URL_IMG1;
+            document.getElementById('img2').src = URL_IMG2;
+
+            // 更改中央卡片狀態至等待解鎖
+            lockTrigger.innerText = '🔓';
+            document.getElementById('lock-title').innerText = '網站已被擁有者解鎖';
+            document.getElementById('lock-desc').innerText = '網站已被你的寶貝邱O宸解鎖';
+            
+            // 更換下方操作鈕
+            const actionArea = document.getElementById('lock-action-area');
+            actionArea.innerHTML = '<button class="apple-btn" id="free-unlock-btn">免密解鎖</button>';
+
+            // 觸發豪華環境特效：慶祝彩帶與煙火粒子
+            AudioSys.play('success');
+            confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 } });
+
+            // 綁定震撼解鎖轉場按鈕
+            document.getElementById('free-unlock-btn').addEventListener('click', () => {
+                AudioSys.play('shatter');
+                
+                // 震撼劇院級震碎與高光閃爍轉場
+                const tl = gsap.timeline({
+                    onComplete: () => {
+                        switchPage('page2');
+                    }
+                });
+
+                tl.to('#main-lock-card', { scale: 0.4, rotationX: 45, opacity: 0, duration: 0.5, ease: "power4.in" })
+                  .to('#flash-overlay', { opacity: 0.8, duration: 0.15, yoyo: true, repeat: 1 });
+                  
+                // 自動同步啟動背景環境鋼琴音樂
+                AudioSys.startBgMelody();
+                document.getElementById('play-pause-btn').innerHTML = '<i class="fas fa-pause"></i>';
+            });
+        }
+
+        // 第二頁點擊卡片轉場
+        document.getElementById('stage1').addEventListener('click', () => {
+            AudioSys.play('click');
+            // 全螢幕高奢流體縮放轉場
+            gsap.to('#stage1', { scale: 1.1, filter: 'blur(10px)', opacity: 0, duration: 0.5, ease: "power2.inOut", onComplete: () => {
+                switchPage('page3');
+                // 觸發第三頁漂浮計時
+                setTimeout(() => {
+                    gsap.to('#read-btn', { opacity: 1, pointerEvents: 'auto', duration: 0.6, ease: "power2.out" });
+                }, 3000);
+            }});
+        });
+
+        // 第三頁閱讀完畢打字機演出
+        document.getElementById('read-btn').addEventListener('click', function() {
+            AudioSys.play('click');
+            this.style.display = 'none';
+            
+            const wrapper = document.getElementById('letter-wrapper');
+            const box = document.getElementById('letter-box');
+            wrapper.style.display = 'block';
+
+            // 確保網頁順暢向下滾動到展示區
+            gsap.fromTo(wrapper, {opacity: 0, y: 30}, {opacity: 1, y: 0, duration: 0.8, ease: "power3.out"});
+
+            let currentText = "";
+            let charIndex = 0;
+
+            function typeWriter() {
+                if (charIndex < BIRTHDAY_LETTER.length) {
+                    const char = BIRTHDAY_LETTER.charAt(charIndex);
+                    currentText += char;
+                    box.innerText = currentText + " ▎";
+                    
+                    // 打字機音效調節
+                    if(char.trim() !== "") AudioSys.play('type');
+
+                    charIndex++;
+                    
+                    // 依據標點符號自動微調打字流暢度與停頓
+                    let delay = 50;
+                    if (char === '，' || char === '！') delay = 350;
+                    if (char === '。' || char === '\n') delay = 650;
+
+                    setTimeout(typeWriter, delay);
+                    // 保持自動跟隨滾動
+                    wrapper.scrollTop = wrapper.scrollHeight;
+                } else {
+                    box.innerText = currentText; // 移除游標
+                    
+                    // 完成後 10 秒優雅浮現 Footer
+                    setTimeout(() => {
+                        gsap.to('#apple-footer', { opacity: 1, duration: 2, ease: "power2.out" });
+                    }, 10000);
+                }
+            }
+            typeWriter();
+        });
+
+        // 音樂播放中心操作邏輯
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const muteBtn = document.getElementById('mute-btn');
+
+        playPauseBtn.addEventListener('click', () => {
+            AudioSys.init();
+            if (AudioSys.isBgPlaying) {
+                AudioSys.stopBgMelody();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                AudioSys.startBgMelody();
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        });
+
+        let isMuted = false;
+        muteBtn.addEventListener('click', () => {
+            AudioSys.init();
+            if(!isMuted) {
+                isMuted = true;
+                muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                AudioSys.stopBgMelody();
+            } else {
+                isMuted = false;
+                muteBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+                if(playPauseBtn.innerHTML.includes('pause')) AudioSys.startBgMelody();
+            }
+        });
+
+        // 3D 滑鼠動態 Liquid Glass 高光傾斜追蹤特效
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.liquid-glass');
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            const dx = (e.clientX - cx) / cx;
+            const dy = (e.clientY - cy) / cy;
+
+            cards.forEach(card => {
+                if(card.closest('.page.active') || card.closest('.admin-modal-backdrop.active')) {
+                    gsap.to(card, {
+                        rotationY: dx * 10,
+                        rotationX: -dy * 10,
+                        duration: 0.4,
+                        ease: "power1.out"
+                    });
+                }
+            });
+        });
+
+        // 啟動初始化檢查
+        window.onload = checkTimeAndInit;
+    </script>
+</body>
+</html>
